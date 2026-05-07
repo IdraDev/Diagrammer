@@ -15,7 +15,8 @@
       "WebFetch(domain:github.com)",
       "Bash(git mv *)",
       "Bash(echo \"exit: $?\")",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(git *)"
     ]
   }
 }
