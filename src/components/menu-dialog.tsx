@@ -49,7 +49,7 @@ export function MenuDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Standard Map</DialogTitle>
+          <DialogTitle>Makemeamap</DialogTitle>
           <DialogDescription>
             Open a map, paste JSON, browse recents and examples, or copy the
             authoring skill.

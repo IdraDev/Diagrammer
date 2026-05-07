@@ -10,12 +10,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/input'
 import { tryParseMap } from '@/lib/schema'
-import type { StandardMap } from '@/lib/schema'
+import type { MapDocument } from '@/lib/schema'
 
 interface PasteDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onLoad: (map: StandardMap, source: 'paste') => void
+  onLoad: (map: MapDocument, source: 'paste') => void
 }
 
 export function PasteDialog({ open, onOpenChange, onLoad }: PasteDialogProps) {
@@ -40,7 +40,7 @@ export function PasteDialog({ open, onOpenChange, onLoad }: PasteDialogProps) {
         <DialogHeader>
           <DialogTitle>Paste map JSON</DialogTitle>
           <DialogDescription>
-            Paste a Standard Map JSON document. The viewer validates it before
+            Paste a Makemeamap JSON document. The viewer validates it before
             rendering.
           </DialogDescription>
         </DialogHeader>

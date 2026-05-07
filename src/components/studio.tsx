@@ -67,7 +67,7 @@ import {
   type EdgeDirection,
   type EdgeStyle,
   type NodeShape,
-  type StandardMap,
+  type MapDocument,
 } from '@/lib/schema'
 import { EXAMPLES, type ExampleEntry } from '@/lib/examples'
 import { cn, downloadJson, slugify } from '@/lib/utils'
@@ -75,7 +75,7 @@ import { InlineMarkdown, stripMarkdown } from '@/lib/markdown'
 import { useTheme } from '@/lib/theme'
 
 interface ActiveMap {
-  map: StandardMap
+  map: MapDocument
   recent: RecentMap
 }
 
@@ -122,8 +122,8 @@ export function Studio() {
   // Tab title — strip markdown so the document title stays plain text.
   useEffect(() => {
     document.title = active
-      ? `${stripMarkdown(active.map.title)} · Standard Map`
-      : 'Standard Map'
+      ? `${stripMarkdown(active.map.title)} · Makemeamap`
+      : 'Makemeamap'
   }, [active])
 
   // When the active map changes (different recent.id), seed RF state.
@@ -186,7 +186,7 @@ export function Studio() {
 
   const openMap = useCallback(
     (
-      map: StandardMap,
+      map: MapDocument,
       source: RecentMap['source'],
       fileName: string | undefined,
     ) => {
@@ -246,7 +246,7 @@ export function Studio() {
       shape: 'rounded',
       emphasis: 'strong',
     })
-    const map: StandardMap = {
+    const map: MapDocument = {
       version: '1',
       type: 'mindmap',
       title: 'Untitled map',
@@ -558,7 +558,7 @@ export function Studio() {
           <div className="flex items-center gap-1.5 px-1.5">
             <Logo />
             <span className="hidden text-sm font-semibold tracking-tight sm:inline">
-              Standard Map
+              Makemeamap
             </span>
           </div>
           {active ? (
@@ -809,7 +809,7 @@ export function Studio() {
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-[var(--color-background)]/80 backdrop-blur-sm">
             <div className="rounded-lg border-2 border-dashed border-[var(--color-foreground)]/40 px-8 py-6 text-center">
               <FileJson className="mx-auto mb-2 size-6" />
-              <p className="text-sm font-medium">Drop a Standard Map JSON file</p>
+              <p className="text-sm font-medium">Drop a Makemeamap JSON file</p>
             </div>
           </div>
         ) : null}
@@ -878,7 +878,7 @@ function EmptyState({
           <Logo size={26} />
         </div>
         <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-          Standard Map
+          Makemeamap
         </h1>
         <p className="mt-2 max-w-sm text-sm text-[var(--color-muted-foreground)]">
           Open a JSON map your model authored, or build one by hand on the canvas.

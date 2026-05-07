@@ -1,5 +1,5 @@
 /**
- * Standard Map JSON schema.
+ * Makemeamap JSON schema.
  *
  * A map describes a labelled set of nodes connected by edges, plus a
  * `type` hint that the viewer uses to pick a layout.
@@ -73,7 +73,7 @@ export interface MapEdge {
   direction?: EdgeDirection
 }
 
-export interface StandardMap {
+export interface MapDocument {
   version: typeof SCHEMA_VERSION
   type: MapType
   title: string
@@ -94,7 +94,7 @@ export interface ValidationIssue {
 
 export interface ValidationResult {
   ok: boolean
-  map?: StandardMap
+  map?: MapDocument
   issues: ValidationIssue[]
 }
 
@@ -290,9 +290,9 @@ export function validateMap(input: unknown): ValidationResult {
     return { ok: false, issues }
   }
 
-  const meta = isObject(root.meta) ? (root.meta as StandardMap['meta']) : undefined
+  const meta = isObject(root.meta) ? (root.meta as MapDocument['meta']) : undefined
 
-  const map: StandardMap = {
+  const map: MapDocument = {
     version: SCHEMA_VERSION,
     type: root.type as MapType,
     title: root.title as string,

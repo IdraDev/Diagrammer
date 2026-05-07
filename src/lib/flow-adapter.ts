@@ -8,7 +8,7 @@ import type {
   NodeColor,
   NodeEmphasis,
   NodeShape,
-  StandardMap,
+  MapDocument,
 } from './schema'
 
 export interface StandardNodeData {
@@ -37,10 +37,10 @@ export interface FlowGraph {
 }
 
 /**
- * Convert a StandardMap (with auto-layout applied) to React Flow nodes/edges.
+ * Convert a MapDocument (with auto-layout applied) to React Flow nodes/edges.
  * React Flow uses top-left positions; our layout returns node centers.
  */
-export function mapToFlow(map: StandardMap): FlowGraph {
+export function mapToFlow(map: MapDocument): FlowGraph {
   const laid = layoutMap(map)
 
   const nodes: StandardFlowNode[] = laid.nodes.map((n) => ({
@@ -76,14 +76,14 @@ export function mapToFlow(map: StandardMap): FlowGraph {
 }
 
 /**
- * Build a fresh StandardMap from a previous map plus the current React Flow
+ * Build a fresh MapDocument from a previous map plus the current React Flow
  * state. Used after the user moves nodes / edits labels / connects edges.
  */
 export function flowToMap(
-  base: StandardMap,
+  base: MapDocument,
   flowNodes: StandardFlowNode[],
   flowEdges: StandardFlowEdge[],
-): StandardMap {
+): MapDocument {
   const nodes: MapNode[] = flowNodes.map((n) => {
     const data = n.data
     const w = n.width ?? n.measured?.width ?? data.width
@@ -115,7 +115,7 @@ export function flowToMap(
 }
 
 /**
- * Build a StandardMap node from raw fields, using measureNode for sizing.
+ * Build a MapDocument node from raw fields, using measureNode for sizing.
  * Used by the editor when adding new nodes.
  */
 export function buildNode(input: {

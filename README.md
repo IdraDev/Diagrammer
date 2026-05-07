@@ -1,4 +1,6 @@
-# Standard Map
+# 🗺️ Makemeamap
+
+> by **IdraDev**
 
 A minimal viewer for LLM-authored mind maps and diagrams. Local-first,
 schema-driven, no account, no cloud.
@@ -8,7 +10,7 @@ that conforms to a small schema, and the viewer renders it on a pannable,
 zoomable canvas — mindmap, tree, flowchart, graph, concept map, or timeline,
 auto-laid-out per type.
 
-## Features
+## ✨ Features
 
 - **Six map types** (`mindmap`, `tree`, `flowchart`, `graph`, `concept`,
   `timeline`) with an auto-layout per type — no coordinates required.
@@ -22,7 +24,7 @@ auto-laid-out per type.
 - **Examples** covering each layout type.
 - **Light**, dark, and system themes (light by default).
 
-## Stack
+## 🧱 Stack
 
 - Vite + React 19 + TypeScript
 - Tailwind CSS v4
@@ -30,14 +32,14 @@ auto-laid-out per type.
 - React Flow (`@xyflow/react`) for the canvas
 - React Compiler
 
-## Develop
+## 🚀 Develop
 
 ```sh
 bun install
 bun run dev
 ```
 
-## Try it
+## 🎯 Try it
 
 The repo ships with a sample map you can drag straight onto the canvas:
 
@@ -48,7 +50,7 @@ examples/product-launch.json
 The in-app **Examples** menu carries one of each layout type if you want to
 see them all without authoring anything.
 
-## The authoring skill
+## 🤖 The authoring skill
 
 The [`SKILL.md`](./SKILL.md) file is the contract LLMs follow to produce maps
 this viewer can render. It documents:
@@ -63,7 +65,7 @@ The home page exposes a "Copy authoring skill" button that copies the same
 text to your clipboard — paste it into your model's system prompt, a Claude
 Code skill file, a Cursor rule, or any other instruction surface.
 
-## Schema, briefly
+## 📐 Schema, briefly
 
 ```json
 {
@@ -83,6 +85,6 @@ Code skill file, a Cursor rule, or any other instruction surface.
 
 See [`SKILL.md`](./SKILL.md) for the full reference.
 
-## License
+## 📄 License
 
-MIT
+MIT — by **IdraDev**

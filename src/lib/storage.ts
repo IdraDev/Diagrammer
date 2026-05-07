@@ -1,20 +1,20 @@
-import type { StandardMap } from './schema'
+import type { MapDocument } from './schema'
 
-const RECENTS_KEY = 'standard-map:recents:v1'
-const PREFS_KEY = 'standard-map:prefs:v1'
+const RECENTS_KEY = 'makemeamap:recents:v1'
+const PREFS_KEY = 'makemeamap:prefs:v1'
 const MAX_RECENTS = 24
 
 export interface RecentMap {
   id: string
   title: string
-  type: StandardMap['type']
+  type: MapDocument['type']
   nodeCount: number
   edgeCount: number
   updatedAt: number
   source: 'file' | 'paste' | 'example' | 'local'
   fileName?: string
   /** Inlined map JSON; we keep a copy so the user can re-open without re-importing. */
-  map: StandardMap
+  map: MapDocument
 }
 
 export interface Prefs {

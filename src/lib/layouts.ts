@@ -1,4 +1,4 @@
-import type { MapEdge, MapNode, StandardMap } from './schema'
+import type { MapEdge, MapNode, MapDocument } from './schema'
 
 export interface LaidOutNode extends MapNode {
   x: number
@@ -45,7 +45,7 @@ interface Adjacency {
   byId: Map<string, MapNode>
 }
 
-function buildAdjacency(map: StandardMap): Adjacency {
+function buildAdjacency(map: MapDocument): Adjacency {
   const outgoing = new Map<string, string[]>()
   const incoming = new Map<string, string[]>()
   const byId = new Map<string, MapNode>()
@@ -62,7 +62,7 @@ function buildAdjacency(map: StandardMap): Adjacency {
   return { outgoing, incoming, byId }
 }
 
-function findRoots(map: StandardMap, adj: Adjacency): string[] {
+function findRoots(map: MapDocument, adj: Adjacency): string[] {
   // Prefer nodes with no incoming edges. If none (cycle), pick the first node.
   const roots: string[] = []
   for (const n of map.nodes) {
@@ -74,7 +74,7 @@ function findRoots(map: StandardMap, adj: Adjacency): string[] {
   return roots
 }
 
-function buildHierarchy(map: StandardMap, adj: Adjacency) {
+function buildHierarchy(map: MapDocument, adj: Adjacency) {
   // Tree/mindmap: children inferred from `parent` hint or first incoming/outgoing edges.
   const children = new Map<string, string[]>()
   for (const n of map.nodes) children.set(n.id, [])
@@ -121,7 +121,7 @@ function buildHierarchy(map: StandardMap, adj: Adjacency) {
 }
 
 // ---- Tree (top-down) ----
-function layoutTree(map: StandardMap, adj: Adjacency): Map<string, { x: number; y: number }> {
+function layoutTree(map: MapDocument, adj: Adjacency): Map<string, { x: number; y: number }> {
   const positions = new Map<string, { x: number; y: number }>()
   const { roots, children } = buildHierarchy(map, adj)
 
@@ -176,7 +176,7 @@ function layoutTree(map: StandardMap, adj: Adjacency): Map<string, { x: number; 
 }
 
 // ---- Mindmap (radial) ----
-function layoutMindmap(map: StandardMap, adj: Adjacency): Map<string, { x: number; y: number }> {
+function layoutMindmap(map: MapDocument, adj: Adjacency): Map<string, { x: number; y: number }> {
   const positions = new Map<string, { x: number; y: number }>()
   const { roots, children } = buildHierarchy(map, adj)
 
@@ -222,7 +222,7 @@ function layoutMindmap(map: StandardMap, adj: Adjacency): Map<string, { x: numbe
 }
 
 // ---- Flowchart (layered) ----
-function layoutFlowchart(map: StandardMap, adj: Adjacency): Map<string, { x: number; y: number }> {
+function layoutFlowchart(map: MapDocument, adj: Adjacency): Map<string, { x: number; y: number }> {
   const layer = new Map<string, number>()
   for (const id of adj.byId.keys()) layer.set(id, 0)
 
@@ -279,7 +279,7 @@ function layoutFlowchart(map: StandardMap, adj: Adjacency): Map<string, { x: num
 }
 
 // ---- Timeline (linear) ----
-function layoutTimeline(map: StandardMap, adj: Adjacency): Map<string, { x: number; y: number }> {
+function layoutTimeline(map: MapDocument, adj: Adjacency): Map<string, { x: number; y: number }> {
   // Order by topological order if possible, else original order.
   const order: string[] = []
   const remaining = new Set(map.nodes.map((n) => n.id))
@@ -320,7 +320,7 @@ function layoutTimeline(map: StandardMap, adj: Adjacency): Map<string, { x: numb
 }
 
 // ---- Graph / Concept (force-directed) ----
-function layoutForce(map: StandardMap, _adj: Adjacency): Map<string, { x: number; y: number }> {
+function layoutForce(map: MapDocument, _adj: Adjacency): Map<string, { x: number; y: number }> {
   const ids = map.nodes.map((n) => n.id)
   const N = ids.length
   if (N === 0) return new Map()
@@ -409,7 +409,7 @@ function layoutForce(map: StandardMap, _adj: Adjacency): Map<string, { x: number
   return out
 }
 
-function deterministicLayout(map: StandardMap): Map<string, { x: number; y: number }> {
+function deterministicLayout(map: MapDocument): Map<string, { x: number; y: number }> {
   const adj = buildAdjacency(map)
   switch (map.type) {
     case 'tree':
@@ -427,7 +427,7 @@ function deterministicLayout(map: StandardMap): Map<string, { x: number; y: numb
   }
 }
 
-export function layoutMap(map: StandardMap): LaidOutMap {
+export function layoutMap(map: MapDocument): LaidOutMap {
   const computed = deterministicLayout(map)
 
   const nodes: LaidOutNode[] = map.nodes.map((n) => {

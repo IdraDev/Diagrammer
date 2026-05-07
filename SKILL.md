@@ -1,11 +1,11 @@
 ---
-name: standard-map
-description: Author Standard Map JSON for the standard-map viewer. Use whenever the user asks for a mind map, concept map, flowchart, tree, dependency graph, or timeline. Output a single JSON document conforming to the schema below.
+name: makemeamap
+description: Author Makemeamap JSON for the Makemeamap viewer. Use whenever the user asks for a mind map, concept map, flowchart, tree, dependency graph, or timeline. Output a single JSON document conforming to the schema below.
 ---
 
-# Standard Map authoring guide
+# Makemeamap authoring guide
 
-You are producing a single JSON document that the standard-map viewer will
+You are producing a single JSON document that the Makemeamap viewer will
 render on a pannable, zoomable canvas. Do not output prose around the JSON
 unless the user explicitly asks for it; emit one fenced JSON block.
 

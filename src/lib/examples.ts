@@ -1,14 +1,14 @@
-import type { StandardMap } from './schema'
+import type { MapDocument } from './schema'
 
 export interface ExampleEntry {
   slug: string
   label: string
   description: string
-  map: StandardMap
+  map: MapDocument
 }
 
 // ---------- 1. Mindmap: Launching a SaaS ----------
-const saasMindmap: StandardMap = {
+const saasMindmap: MapDocument = {
   version: '1',
   type: 'mindmap',
   title: 'Launching a **SaaS**',
@@ -83,7 +83,7 @@ const saasMindmap: StandardMap = {
 }
 
 // ---------- 2. Tree: Web platform ----------
-const webPlatformTree: StandardMap = {
+const webPlatformTree: MapDocument = {
   version: '1',
   type: 'tree',
   title: 'Web platform',
@@ -139,7 +139,7 @@ const webPlatformTree: StandardMap = {
 }
 
 // ---------- 3. Flowchart: Pull request lifecycle ----------
-const pullRequestFlow: StandardMap = {
+const pullRequestFlow: MapDocument = {
   version: '1',
   type: 'flowchart',
   title: '**Pull request** lifecycle',
@@ -206,7 +206,7 @@ const pullRequestFlow: StandardMap = {
 }
 
 // ---------- 4. Graph: React ecosystem ----------
-const reactEcosystemGraph: StandardMap = {
+const reactEcosystemGraph: MapDocument = {
   version: '1',
   type: 'graph',
   title: 'React ecosystem',
@@ -270,7 +270,7 @@ const reactEcosystemGraph: StandardMap = {
 }
 
 // ---------- 5. Concept map: Functional programming ----------
-const functionalProgramming: StandardMap = {
+const functionalProgramming: MapDocument = {
   version: '1',
   type: 'concept',
   title: 'Functional programming',
@@ -311,7 +311,7 @@ const functionalProgramming: StandardMap = {
 }
 
 // ---------- 6. Timeline: Web platform milestones ----------
-const webTimeline: StandardMap = {
+const webTimeline: MapDocument = {
   version: '1',
   type: 'timeline',
   title: 'Web platform milestones',
