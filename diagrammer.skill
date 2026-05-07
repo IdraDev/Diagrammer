@@ -1,0 +1,16 @@
+{
+  "name": "diagrammer",
+  "version": "0.1.0",
+  "description": "Author Diagrammer JSON for the Diagrammer viewer (mindmap, tree, flowchart, graph, ER, concept, timeline).",
+  "homepage": "https://diagrammer.idra.app",
+  "license": "MIT",
+  "author": "IdraDev",
+  "skill": "skills/diagrammer/SKILL.md",
+  "rules": {
+    "cursor": ".cursor/rules/diagrammer.mdc",
+    "windsurf": ".windsurf/rules/diagrammer.md",
+    "cline": ".clinerules/diagrammer.md",
+    "agents": "AGENTS.md",
+    "claude": "CLAUDE.md"
+  }
+}

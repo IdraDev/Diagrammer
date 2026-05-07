@@ -1,0 +1,25 @@
+{
+  "name": "diagrammer",
+  "owner": {
+    "name": "IdraDev",
+    "url": "https://idra.app"
+  },
+  "metadata": {
+    "description": "Diagrammer skills marketplace — author JSON the Diagrammer viewer can render.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "diagrammer",
+      "source": ".",
+      "description": "Author Diagrammer JSON: mindmap, tree, flowchart, graph, ER, concept, timeline.",
+      "version": "0.1.0",
+      "author": {
+        "name": "IdraDev"
+      },
+      "homepage": "https://diagrammer.idra.app",
+      "license": "MIT",
+      "keywords": ["diagram", "mindmap", "er-diagram", "flowchart", "llm"]
+    }
+  ]
+}

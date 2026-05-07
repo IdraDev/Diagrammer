@@ -26,7 +26,7 @@
 
 ---
 
-A local-first, schema-driven viewer for **LLM-authored diagrams**. Hand a model the [authoring skill](./SKILL.md), it returns a JSON document, and the viewer renders it on a pannable, zoomable canvas — **mindmap, tree, flowchart, graph, ER diagram, concept map, or timeline**, auto-laid-out per type. No account. No cloud. No drag-pixels-by-hand.
+A local-first, schema-driven viewer for **LLM-authored diagrams**. Hand a model the [authoring skill](./skills/diagrammer/SKILL.md), it returns a JSON document, and the viewer renders it on a pannable, zoomable canvas — **mindmap, tree, flowchart, graph, ER diagram, concept map, or timeline**, auto-laid-out per type. No account. No cloud. No drag-pixels-by-hand.
 
 ## Why
 
@@ -100,16 +100,47 @@ I never found a **truly open-source, zero vendor lock-in** way to take a mind ma
 
 ## Install
 
+### Web viewer
+
 ```bash
+cd web
 bun install
 bun run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
 
-**Build:** `bun run build` → static `dist/`. Drop on any host.
+**Build:** `cd web && bun run build` → static `web/dist/`. Drop on any host.
 
 **Live:** [diagrammer.idra.app](https://diagrammer.idra.app).
+
+### Skill (Cursor / Windsurf / Cline / Codex / Claude Code / Gemini)
+
+Drop the Diagrammer authoring skill into your editor of choice:
+
+```bash
+# macOS / Linux / WSL / Git Bash
+bash install.sh --all          # install every supported agent
+bash install.sh --only cursor  # just one
+bash install.sh                # autodetect from your $PWD
+
+# Windows (PowerShell)
+./install.ps1 -All
+./install.ps1 -Only cursor
+./install.ps1
+```
+
+| Agent       | Lands in                                                |
+| ----------- | ------------------------------------------------------- |
+| Cursor      | `.cursor/rules/diagrammer.mdc`                          |
+| Windsurf    | `.windsurf/rules/diagrammer.md`                         |
+| Cline       | `.clinerules/diagrammer.md`                             |
+| Codex       | `.codex/{config.toml,hooks.json}`                       |
+| Claude Code | `.claude-plugin/{plugin,marketplace}.json`              |
+| Gemini CLI  | `gemini-extension.json`                                 |
+| Generic     | `AGENTS.md` (any agent that reads `AGENTS.md` at root)  |
+
+All variants reference the canonical [`skills/diagrammer/SKILL.md`](./skills/diagrammer/SKILL.md). For ChatGPT / Copilot Chat / any web UI without a skill format, paste `skills/diagrammer/SKILL.md` into the system prompt or custom instructions.
 
 ### Stack
 
@@ -124,7 +155,7 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ## Authoring Skill
 
-[`SKILL.md`](./SKILL.md) is the contract LLMs follow to produce diagrams this viewer can render. It documents the schema, when to use each `type` (incl. ER), visual conventions, worked examples, and anti-patterns.
+[`skills/diagrammer/SKILL.md`](./skills/diagrammer/SKILL.md) is the contract LLMs follow to produce diagrams this viewer can render. It documents the schema, when to use each `type` (incl. ER), visual conventions, worked examples, and anti-patterns.
 
 The home page exposes a **Copy authoring skill** button — paste it into your model's system prompt, a Claude Code skill file, a Cursor rule, or any other instruction surface.
 
@@ -158,7 +189,7 @@ The home page exposes a **Copy authoring skill** button — paste it into your m
 | `edges[].style`     | enum  | `solid` · `dashed` · `dotted`.                                                 |
 | `edges[].direction` | enum  | `forward` · `backward` · `both` · `none`.                                      |
 
-Full reference: [`SKILL.md`](./SKILL.md).
+Full reference: [`skills/diagrammer/SKILL.md`](./skills/diagrammer/SKILL.md).
 
 ## ER Diagrams
 
@@ -186,7 +217,7 @@ In-app **Examples** menu carries one of each layout type:
 - 💡 **Functional programming** — concept map w/ bidirectional links
 - 📅 **Web platform milestones** — timeline 1991 → today
 
-Drop any `*.json` from [`examples/`](./examples) onto the canvas, or paste straight from clipboard.
+Drop any `*.json` from [`web/examples/`](./web/examples) onto the canvas, or paste straight from clipboard.
 
 > [!IMPORTANT]
 > Diagrammer doesn't talk to any backend. Everything (recents, prefs, the active map) lives in your browser's `localStorage`. Clear it, lose it. Export your maps if you care.

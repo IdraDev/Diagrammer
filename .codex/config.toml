@@ -1,0 +1,8 @@
+# OpenAI Codex CLI configuration for Diagrammer.
+# Loads the Diagrammer authoring skill into Codex's context.
+
+[skill.diagrammer]
+name = "diagrammer"
+description = "Author Diagrammer JSON for the Diagrammer viewer (mindmap, tree, flowchart, graph, ER, concept, timeline)."
+file = "skills/diagrammer/SKILL.md"
+trigger = "$diagrammer"

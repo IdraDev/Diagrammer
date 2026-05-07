@@ -1,0 +1,7 @@
+{
+  "name": "diagrammer",
+  "version": "0.1.0",
+  "description": "Author Diagrammer JSON for the Diagrammer viewer (mindmap, tree, flowchart, graph, ER, concept, timeline).",
+  "homepage": "https://diagrammer.idra.app",
+  "contextFileName": "skills/diagrammer/SKILL.md"
+}

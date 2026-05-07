@@ -1,0 +1,29 @@
+{
+  "name": "diagrammer",
+  "version": "0.1.0",
+  "description": "Author Diagrammer JSON for the Diagrammer viewer (mind maps, flowcharts, ER diagrams, concept maps, trees, graphs, timelines).",
+  "author": {
+    "name": "IdraDev",
+    "url": "https://idra.app"
+  },
+  "homepage": "https://diagrammer.idra.app",
+  "repository": "https://github.com/IdraDev/diagrammer",
+  "license": "MIT",
+  "keywords": [
+    "diagram",
+    "mindmap",
+    "flowchart",
+    "er-diagram",
+    "concept-map",
+    "tree",
+    "graph",
+    "timeline",
+    "llm"
+  ],
+  "skills": [
+    "skills/diagrammer"
+  ],
+  "commands": [
+    "commands/diagrammer.toml"
+  ]
+}

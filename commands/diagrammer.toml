@@ -1,0 +1,11 @@
+name = "diagrammer"
+description = "Author a Diagrammer JSON document (mindmap, tree, flowchart, graph, ER, concept, timeline)."
+
+[prompt]
+text = """
+Load the Diagrammer authoring skill from skills/diagrammer/SKILL.md and produce
+one fenced JSON block conforming to that schema, matching the user's request.
+Pick the `type` (mindmap | tree | flowchart | graph | concept | timeline) that
+fits the user's intent. ER diagrams use `type: "graph"`. No prose around the
+JSON unless the user explicitly asks.
+"""

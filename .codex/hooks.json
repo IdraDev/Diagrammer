@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "session.start": [
+      {
+        "name": "load-diagrammer-skill",
+        "description": "Load Diagrammer authoring skill on session start.",
+        "command": "cat",
+        "args": ["skills/diagrammer/SKILL.md"]
+      }
+    ]
+  }
+}
