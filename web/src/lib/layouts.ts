@@ -226,16 +226,19 @@ function layoutFlowchart(map: MapDocument, adj: Adjacency): Map<string, { x: num
   const layer = new Map<string, number>()
   for (const id of adj.byId.keys()) layer.set(id, 0)
 
-  // Topological-ish: longest path from any root.
+  // Topological-ish: longest path from any root. Cap per-node layer at N-1
+  // so cyclic graphs (e.g. flowchart with retry edges) terminate cleanly.
   const roots = findRoots(map, adj)
   const queue: string[] = [...roots]
+  const maxLayer = Math.max(0, map.nodes.length - 1)
   while (queue.length > 0) {
     const id = queue.shift()!
     const cur = layer.get(id)!
+    if (cur >= maxLayer) continue
+    const candidate = cur + 1
     for (const out of adj.outgoing.get(id) ?? []) {
-      const next = Math.max(layer.get(out) ?? 0, cur + 1)
-      if (next > (layer.get(out) ?? 0)) {
-        layer.set(out, next)
+      if (candidate > (layer.get(out) ?? 0)) {
+        layer.set(out, candidate)
         queue.push(out)
       }
     }
@@ -521,6 +524,46 @@ function deterministicLayout(map: MapDocument): Map<string, { x: number; y: numb
   return final
 }
 
+/**
+ * Iteratively push apart any nodes whose AABBs overlap. Acts as a safety net
+ * over both auto-layout output and hand-authored `x`/`y` coordinates so loaded
+ * maps never render with stacked nodes. Smaller-axis separation keeps motion
+ * minimal — nodes shift the shortest distance needed to clear.
+ */
+function resolveOverlaps(nodes: LaidOutNode[]) {
+  const PAD = 16
+  const MAX_ITER = 60
+  for (let iter = 0; iter < MAX_ITER; iter++) {
+    let moved = false
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i]
+        const b = nodes[j]
+        const dx = b.x - a.x
+        const dy = b.y - a.y
+        const minDx = (a.width + b.width) / 2 + PAD
+        const minDy = (a.height + b.height) / 2 + PAD
+        const overlapX = minDx - Math.abs(dx)
+        const overlapY = minDy - Math.abs(dy)
+        if (overlapX <= 0 || overlapY <= 0) continue
+        moved = true
+        if (overlapX < overlapY) {
+          const sign = dx === 0 ? (i < j ? -1 : 1) : Math.sign(dx)
+          const shift = overlapX / 2
+          a.x -= sign * shift
+          b.x += sign * shift
+        } else {
+          const sign = dy === 0 ? (i < j ? -1 : 1) : Math.sign(dy)
+          const shift = overlapY / 2
+          a.y -= sign * shift
+          b.y += sign * shift
+        }
+      }
+    }
+    if (!moved) break
+  }
+}
+
 export function layoutMap(map: MapDocument): LaidOutMap {
   const computed = deterministicLayout(map)
 
@@ -531,6 +574,8 @@ export function layoutMap(map: MapDocument): LaidOutMap {
     const y = typeof n.y === 'number' ? n.y : c.y
     return { ...n, x, y, width, height }
   })
+
+  resolveOverlaps(nodes)
 
   // Compute bounds with padding.
   const PAD = 80

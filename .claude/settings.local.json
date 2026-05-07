@@ -16,7 +16,25 @@
       "Bash(git mv *)",
       "Bash(echo \"exit: $?\")",
       "Bash(echo \"exit:$?\")",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(npx playwright *)",
+      "Bash(node *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(tee /tmp/devout.log)",
+      "Bash(tasklist)",
+      "Bash(findstr /i node)",
+      "Bash(node test-crash.mjs)",
+      "Bash(echo \"started: $!\")",
+      "Read(//tmp/**)",
+      "Bash(kill 667)",
+      "Bash(echo \"started $!\")",
+      "Bash(kill 962)",
+      "Bash(taskkill //F //IM chrome.exe)",
+      "Bash(taskkill //F //IM playwright.exe)",
+      "Bash(kill 1146)",
+      "Bash(kill 1284)",
+      "Bash(bunx tsc *)",
+      "Bash(bunx eslint *)"
     ]
   }
 }

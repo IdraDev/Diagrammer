@@ -79,6 +79,8 @@ interface ActiveMap {
   recent: RecentMap;
 }
 
+type SaveState = "idle" | "pending" | "saving";
+
 const PERSIST_DEBOUNCE_MS = 600;
 
 export function Studio() {
@@ -103,6 +105,19 @@ export function Studio() {
     nodes: [],
     edges: [],
   });
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const activeRef = useRef<ActiveMap | null>(null);
+  const persistRef = useRef<{
+    active: ActiveMap;
+    nodes: StandardFlowNode[];
+    edges: StandardFlowEdge[];
+  } | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const seededRef = useRef(false);
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   // Restore the last opened map and the recents list on mount.
   useEffect(() => {
@@ -130,6 +145,7 @@ export function Studio() {
   // When the active map changes (different recent.id), seed RF state.
   useEffect(() => {
     if (!active) {
+      seededRef.current = true;
       setNodes([]);
       setEdges([]);
       setIsEditing(false);
@@ -137,6 +153,7 @@ export function Studio() {
       return;
     }
     const graph = mapToFlow(active.map);
+    seededRef.current = true;
     setNodes(graph.nodes);
     setEdges(graph.edges);
     setTitleEditing(false);
@@ -162,32 +179,68 @@ export function Studio() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active?.recent.id]);
 
-  // Persist edits back to the recent (debounced).
+  // Synchronously persist any pending change. Safe to call repeatedly.
+  const flushSave = useCallback(() => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    const data = persistRef.current;
+    if (!data) {
+      setSaveState("idle");
+      return;
+    }
+    persistRef.current = null;
+    setSaveState("saving");
+    const { active: a, nodes: n, edges: e } = data;
+    const next = flowToMap(a.map, n, e);
+    const updated = saveRecent({
+      id: a.recent.id,
+      title: next.title,
+      type: next.type,
+      nodeCount: next.nodes.length,
+      edgeCount: next.edges.length,
+      source: a.recent.source,
+      fileName: a.recent.fileName,
+      map: next,
+    });
+    setActive((prev) =>
+      prev && prev.recent.id === updated.id
+        ? { map: next, recent: updated }
+        : prev,
+    );
+    setRecents(getRecents());
+    setSaveState("idle");
+  }, []);
+
+  // Persist edits back to the recent (debounced). Skipped immediately after a
+  // seed since the loaded content already matches what's on disk.
   useEffect(() => {
-    if (!active) return;
-    const t = setTimeout(() => {
-      const next = flowToMap(active.map, nodes, edges);
-      const updated = saveRecent({
-        id: active.recent.id,
-        title: next.title,
-        type: next.type,
-        nodeCount: next.nodes.length,
-        edgeCount: next.edges.length,
-        source: active.recent.source,
-        fileName: active.recent.fileName,
-        map: next,
-      });
-      // Update the local cache without forcing a remount.
-      setActive((prev) =>
-        prev && prev.recent.id === updated.id
-          ? { map: next, recent: updated }
-          : prev,
-      );
-      setRecents(getRecents());
-    }, PERSIST_DEBOUNCE_MS);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes, edges]);
+    if (seededRef.current) {
+      seededRef.current = false;
+      return;
+    }
+    const a = activeRef.current;
+    if (!a) return;
+    persistRef.current = { active: a, nodes, edges };
+    setSaveState("pending");
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(flushSave, PERSIST_DEBOUNCE_MS);
+  }, [nodes, edges, flushSave]);
+
+  // Flush any pending save before the tab unloads, and confirm with the user
+  // if a write is in flight.
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (persistRef.current || saveTimerRef.current) {
+        flushSave();
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [flushSave]);
 
   const refreshRecents = useCallback(() => setRecents(getRecents()), []);
 
@@ -199,6 +252,7 @@ export function Studio() {
       source: RecentMap["source"],
       fileName: string | undefined,
     ) => {
+      flushSave();
       const recent = saveRecent({
         title: map.title,
         type: map.type,
@@ -211,7 +265,7 @@ export function Studio() {
       setActive({ map, recent });
       setRecents(getRecents());
     },
-    [],
+    [flushSave],
   );
 
   const openExample = useCallback(
@@ -219,9 +273,13 @@ export function Studio() {
     [openMap],
   );
 
-  const openFromRecent = useCallback((r: RecentMap) => {
-    setActive({ map: r.map, recent: r });
-  }, []);
+  const openFromRecent = useCallback(
+    (r: RecentMap) => {
+      flushSave();
+      setActive({ map: r.map, recent: r });
+    },
+    [flushSave],
+  );
 
   const handleFiles = useCallback(
     async (files: FileList | File[]) => {
@@ -240,7 +298,10 @@ export function Studio() {
 
   const onPickFile = useCallback(() => fileInputRef.current?.click(), []);
 
-  const onCloseMap = useCallback(() => setActive(null), []);
+  const onCloseMap = useCallback(() => {
+    flushSave();
+    setActive(null);
+  }, [flushSave]);
 
   const onDownload = useCallback(() => {
     if (!active) return;
@@ -615,6 +676,7 @@ export function Studio() {
                 >
                   {active.map.type}
                 </Badge>
+                <SaveIndicator state={saveState} />
               </div>
             </>
           ) : null}
@@ -973,6 +1035,28 @@ function Logo({ size = 22 }: { size?: number }) {
       <line x1="9.6" y1="13.4" x2="5.2" y2="18" />
       <line x1="14.4" y1="13.4" x2="18.8" y2="18" />
     </svg>
+  );
+}
+
+function SaveIndicator({ state }: { state: SaveState }) {
+  if (state === "idle") return null;
+  const label = state === "saving" ? "Salvataggio…" : "Modifiche non salvate";
+  return (
+    <span
+      className="ml-1 hidden items-center gap-1 rounded-md border border-(--color-border) bg-(--color-muted)/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-flex"
+      role="status"
+      aria-live="polite"
+    >
+      <span
+        className={cn(
+          "size-1.5 rounded-full",
+          state === "saving"
+            ? "animate-pulse bg-amber-500"
+            : "bg-(--color-foreground)/40",
+        )}
+      />
+      {label}
+    </span>
   );
 }
 
