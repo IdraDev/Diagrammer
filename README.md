@@ -245,6 +245,10 @@ In rough order of what I'm working on:
 
 If you want a feature pulled forward, open an issue.
 
+## 🛠️ Contributing
+
+Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening a PR. TL;DR: local-first stays local-first, the schema is a public contract, [`skills/diagrammer/SKILL.md`](./skills/diagrammer/SKILL.md) and [`web/src/lib/skill.ts`](./web/src/lib/skill.ts) move together, and `bun run lint` + `bun run build` must pass.
+
 ## Star This Repo
 
 If Diagrammer save you mass clicking — leave mass star. ⭐
