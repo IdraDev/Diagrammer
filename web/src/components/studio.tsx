@@ -49,6 +49,7 @@ import { MenuDialog } from "./menu-dialog";
 import { MapTypeIcon } from "./map-type-icon";
 import {
   buildNode,
+  deOverlapFlowNodes,
   flowToMap,
   mapToFlow,
   type StandardFlowEdge,
@@ -344,8 +345,23 @@ export function Studio() {
         ? changes
         : changes.filter((c) => c.type === "select" || c.type === "dimensions");
       onNodesChange(filtered);
+      // After a drag ends, push apart anything that ended up overlapping.
+      // The dragged node stays pinned where the user dropped it.
+      const endedDrag = filtered.find(
+        (c) => c.type === "position" && c.dragging === false,
+      );
+      if (endedDrag && endedDrag.type === "position") {
+        const pinId = endedDrag.id;
+        setNodes((ns) => deOverlapFlowNodes(ns, pinId));
+      }
+      // Dimension changes (after RF measures) can reveal overlaps that the
+      // initial unmeasured layout didn't catch.
+      const dim = filtered.some((c) => c.type === "dimensions");
+      if (dim) {
+        setNodes((ns) => deOverlapFlowNodes(ns));
+      }
     },
-    [isEditing, onNodesChange],
+    [isEditing, onNodesChange, setNodes],
   );
 
   const handleEdgesChange = useCallback(
@@ -402,8 +418,8 @@ export function Studio() {
         label: "New node",
         shape: shape ?? "rounded",
       });
-      setNodes((ns) =>
-        ns
+      setNodes((ns) => {
+        const withNew = ns
           .map((n) => ({ ...n, selected: false }))
           .concat([
             {
@@ -425,8 +441,11 @@ export function Studio() {
                 height: built.height,
               },
             },
-          ]),
-      );
+          ]);
+        // Pin the new node to the click/drop location; existing nodes shift
+        // out of the way if the user dropped on top of one.
+        return deOverlapFlowNodes(withNew, id);
+      });
     },
     [setNodes],
   );

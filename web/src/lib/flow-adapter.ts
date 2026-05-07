@@ -1,5 +1,5 @@
 import type { Edge as RFEdge, Node as RFNode } from '@xyflow/react'
-import { layoutMap, measureNode } from './layouts'
+import { layoutMap, measureNode, NODE_MIN_GAP } from './layouts'
 import type {
   EdgeDirection,
   EdgeStyle,
@@ -112,6 +112,73 @@ export function flowToMap(
   })
 
   return { ...base, nodes, edges }
+}
+
+/**
+ * Push apart any nodes whose AABBs (top-left position + width/height) overlap.
+ * Returns a new array only when something moved; otherwise returns the input
+ * reference so React can bail out cheaply. Optional `pinId` keeps that node
+ * fixed (used when only one node moved — e.g. drag end — so the rest of the
+ * canvas absorbs the displacement).
+ */
+export function deOverlapFlowNodes(
+  nodes: StandardFlowNode[],
+  pinId?: string,
+): StandardFlowNode[] {
+  if (nodes.length < 2) return nodes
+  const PAD = NODE_MIN_GAP
+  const MAX_ITER = 200
+  type Box = { id: string; x: number; y: number; w: number; h: number; pinned: boolean }
+  const boxes: Box[] = nodes.map((n) => ({
+    id: n.id,
+    x: n.position.x,
+    y: n.position.y,
+    w: n.width ?? n.measured?.width ?? n.data.width,
+    h: n.height ?? n.measured?.height ?? n.data.height,
+    pinned: n.id === pinId,
+  }))
+  let anyMoved = false
+  for (let iter = 0; iter < MAX_ITER; iter++) {
+    let moved = false
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]
+        const b = boxes[j]
+        const acx = a.x + a.w / 2
+        const acy = a.y + a.h / 2
+        const bcx = b.x + b.w / 2
+        const bcy = b.y + b.h / 2
+        const dx = bcx - acx
+        const dy = bcy - acy
+        const minDx = (a.w + b.w) / 2 + PAD
+        const minDy = (a.h + b.h) / 2 + PAD
+        const overlapX = minDx - Math.abs(dx)
+        const overlapY = minDy - Math.abs(dy)
+        if (overlapX <= 0 || overlapY <= 0) continue
+        moved = true
+        anyMoved = true
+        // Distribute shift between the two boxes; pinned boxes don't move.
+        const aShare = a.pinned ? 0 : b.pinned ? 1 : 0.5
+        const bShare = b.pinned ? 0 : a.pinned ? 1 : 0.5
+        if (overlapX < overlapY) {
+          const sign = dx === 0 ? (i < j ? -1 : 1) : Math.sign(dx)
+          a.x -= sign * overlapX * aShare
+          b.x += sign * overlapX * bShare
+        } else {
+          const sign = dy === 0 ? (i < j ? -1 : 1) : Math.sign(dy)
+          a.y -= sign * overlapY * aShare
+          b.y += sign * overlapY * bShare
+        }
+      }
+    }
+    if (!moved) break
+  }
+  if (!anyMoved) return nodes
+  return nodes.map((n, i) => {
+    const b = boxes[i]
+    if (b.x === n.position.x && b.y === n.position.y) return n
+    return { ...n, position: { x: b.x, y: b.y } }
+  })
 }
 
 /**

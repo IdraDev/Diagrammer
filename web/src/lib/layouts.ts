@@ -530,11 +530,13 @@ function deterministicLayout(map: MapDocument): Map<string, { x: number; y: numb
  * maps never render with stacked nodes. Smaller-axis separation keeps motion
  * minimal — nodes shift the shortest distance needed to clear.
  */
+/** Minimum gap (px) between any two node bounding boxes. Shared between the
+ * load-time layout safety net and the editor's live drag/insert pass. */
+export const NODE_MIN_GAP = 12
+
 function resolveOverlaps(nodes: LaidOutNode[]) {
-  // Small pad so the safety net only fires on actual overlap or near-touch,
-  // and doesn't perturb hand-placed nodes the user spaced tightly on purpose.
-  const PAD = 4
-  const MAX_ITER = 60
+  const PAD = NODE_MIN_GAP
+  const MAX_ITER = 200
   for (let iter = 0; iter < MAX_ITER; iter++) {
     let moved = false
     for (let i = 0; i < nodes.length; i++) {
