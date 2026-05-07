@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://makemeamap.idra.app/sitemap.xml
+Sitemap: https://diagrammer.idra.app/sitemap.xml

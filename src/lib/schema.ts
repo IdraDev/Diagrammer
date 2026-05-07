@@ -1,5 +1,5 @@
 /**
- * Makemeamap JSON schema.
+ * Diagrammer JSON schema.
  *
  * A map describes a labelled set of nodes connected by edges, plus a
  * `type` hint that the viewer uses to pick a layout.

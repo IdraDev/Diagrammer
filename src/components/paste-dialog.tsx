@@ -40,7 +40,7 @@ export function PasteDialog({ open, onOpenChange, onLoad }: PasteDialogProps) {
         <DialogHeader>
           <DialogTitle>Paste map JSON</DialogTitle>
           <DialogDescription>
-            Paste a Makemeamap JSON document. The viewer validates it before
+            Paste a Diagrammer JSON document. The viewer validates it before
             rendering.
           </DialogDescription>
         </DialogHeader>

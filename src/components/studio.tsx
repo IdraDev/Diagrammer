@@ -122,8 +122,8 @@ export function Studio() {
   // Tab title — strip markdown so the document title stays plain text.
   useEffect(() => {
     document.title = active
-      ? `${stripMarkdown(active.map.title)} · Makemeamap`
-      : 'Makemeamap'
+      ? `${stripMarkdown(active.map.title)} · Diagrammer`
+      : 'Diagrammer'
   }, [active])
 
   // When the active map changes (different recent.id), seed RF state.
@@ -558,7 +558,7 @@ export function Studio() {
           <div className="flex items-center gap-1.5 px-1.5">
             <Logo />
             <span className="hidden text-sm font-semibold tracking-tight sm:inline">
-              Makemeamap
+              Diagrammer
             </span>
           </div>
           {active ? (
@@ -809,7 +809,7 @@ export function Studio() {
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-[var(--color-background)]/80 backdrop-blur-sm">
             <div className="rounded-lg border-2 border-dashed border-[var(--color-foreground)]/40 px-8 py-6 text-center">
               <FileJson className="mx-auto mb-2 size-6" />
-              <p className="text-sm font-medium">Drop a Makemeamap JSON file</p>
+              <p className="text-sm font-medium">Drop a Diagrammer JSON file</p>
             </div>
           </div>
         ) : null}
@@ -878,7 +878,7 @@ function EmptyState({
           <Logo size={26} />
         </div>
         <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-          Makemeamap
+          Diagrammer
         </h1>
         <p className="mt-2 max-w-sm text-sm text-[var(--color-muted-foreground)]">
           Open a JSON map your model authored, or build one by hand on the canvas.

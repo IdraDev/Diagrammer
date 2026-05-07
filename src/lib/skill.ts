@@ -1,15 +1,15 @@
 /**
  * The skill text shipped to LLMs. This is the single source of truth for the
- * Makemeamap authoring contract. Treat it as a stable public document.
+ * Diagrammer authoring contract. Treat it as a stable public document.
  */
 export const SKILL_TEXT = String.raw`---
-name: makemeamap
-description: Author Makemeamap JSON for the Makemeamap viewer. Use whenever the user asks for a mind map, concept map, flowchart, tree, dependency graph, or timeline. Output a single JSON document conforming to the schema below.
+name: diagrammer
+description: Author Diagrammer JSON for the Diagrammer viewer. Use whenever the user asks for a mind map, concept map, flowchart, tree, dependency graph, or timeline. Output a single JSON document conforming to the schema below.
 ---
 
-# Makemeamap authoring guide
+# Diagrammer authoring guide
 
-You are producing a single JSON document that the Makemeamap viewer will
+You are producing a single JSON document that the Diagrammer viewer will
 render on a pannable, zoomable canvas. Do not output prose around the JSON
 unless the user explicitly asks for it; emit one fenced JSON block.
 

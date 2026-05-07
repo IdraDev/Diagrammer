@@ -1,7 +1,7 @@
 import type { MapDocument } from './schema'
 
-const RECENTS_KEY = 'makemeamap:recents:v1'
-const PREFS_KEY = 'makemeamap:prefs:v1'
+const RECENTS_KEY = 'diagrammer:recents:v1'
+const PREFS_KEY = 'diagrammer:prefs:v1'
 const MAX_RECENTS = 24
 
 export interface RecentMap {

@@ -4,7 +4,7 @@ import { Tooltip, TooltipProvider } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { NodeShape } from '@/lib/schema'
 
-export const SHAPE_DRAG_TYPE = 'makemeamap/shape'
+export const SHAPE_DRAG_TYPE = 'diagrammer/shape'
 
 export interface ShapeDragItem {
   shape: NodeShape

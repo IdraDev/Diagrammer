@@ -37,7 +37,7 @@ export function SkillDialog({ open, onOpenChange }: SkillDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Makemeamap authoring skill</DialogTitle>
+          <DialogTitle>Diagrammer authoring skill</DialogTitle>
           <DialogDescription>
             Paste this into your LLM context (system prompt, Cursor rule,
             Claude Code skill file, etc.). Models will produce JSON the viewer
