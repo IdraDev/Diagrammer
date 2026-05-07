@@ -130,15 +130,15 @@ bash install.sh                # autodetect from your $PWD
 ./install.ps1
 ```
 
-| Agent       | Lands in                                                |
-| ----------- | ------------------------------------------------------- |
-| Cursor      | `.cursor/rules/diagrammer.mdc`                          |
-| Windsurf    | `.windsurf/rules/diagrammer.md`                         |
-| Cline       | `.clinerules/diagrammer.md`                             |
-| Codex       | `.codex/{config.toml,hooks.json}`                       |
-| Claude Code | `.claude-plugin/{plugin,marketplace}.json`              |
-| Gemini CLI  | `gemini-extension.json`                                 |
-| Generic     | `AGENTS.md` (any agent that reads `AGENTS.md` at root)  |
+| Agent       | Lands in                                               |
+| ----------- | ------------------------------------------------------ |
+| Cursor      | `.cursor/rules/diagrammer.mdc`                         |
+| Windsurf    | `.windsurf/rules/diagrammer.md`                        |
+| Cline       | `.clinerules/diagrammer.md`                            |
+| Codex       | `.codex/{config.toml,hooks.json}`                      |
+| Claude Code | `.claude-plugin/{plugin,marketplace}.json`             |
+| Gemini CLI  | `gemini-extension.json`                                |
+| Generic     | `AGENTS.md` (any agent that reads `AGENTS.md` at root) |
 
 All variants reference the canonical [`skills/diagrammer/SKILL.md`](./skills/diagrammer/SKILL.md). For ChatGPT / Copilot Chat / any web UI without a skill format, paste `skills/diagrammer/SKILL.md` into the system prompt or custom instructions.
 
@@ -226,7 +226,7 @@ Drop any `*.json` from [`web/examples/`](./web/examples) onto the canvas, or pas
 
 If Diagrammer save you mass clicking — leave mass star. ⭐
 
-[![Star History Chart](https://api.star-history.com/svg?repos=IdraDev/diagrammer&type=Date)](https://star-history.com/#IdraDev/diagrammer&Date)
+[![Star History Chart](https://api.star-history.com/chart?repos=idraDev/Diagrammer&type=date&logscale&legend=top-left)](https://www.star-history.com/?repos=idraDev%2FDiagrammer&type=date&logscale=&legend=top-left)
 
 ## License
 

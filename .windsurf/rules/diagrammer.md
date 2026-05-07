@@ -109,6 +109,39 @@ Avoid links inside node labels; put them in `description` instead.
 - Avoid cycles in `tree` and `flowchart`. Use `graph` or `concept` if
   cycles are essential.
 
+## Multiple groups in one map
+
+A single map can contain **multiple disconnected sub-diagrams** that share the
+canvas without being linked. The viewer detects connected components
+automatically (via edges + `parent` hints) and lays each out independently,
+packing them side-by-side with padding. No special syntax is required:
+
+- Just emit the nodes and edges for each group. Anything that has no edge or
+  `parent` link to another group becomes its own cluster.
+- The same `type` is applied to every component (e.g. all clusters use
+  `mindmap` layout if `type: "mindmap"`).
+- Use this when the user asks to compare/show several small diagrams together,
+  or to lay out parallel sub-trees, parallel flows, sibling ER schemas, etc.
+
+Use `meta.tags` or per-node `description` to explain what each group
+represents — there is no dedicated `group` field.
+
+## Edge marker (line / arrow / double / back)
+
+The `direction` field controls the arrowheads on the edge — i.e. the
+visual marker between the two endpoints:
+
+| `direction`  | Marker         | When to use                                       |
+| ------------ | -------------- | ------------------------------------------------- |
+| `"none"`     | line `—`       | Symmetric / undirected association.               |
+| `"forward"`  | arrow `→`      | Directed link from `from` to `to` (default).      |
+| `"both"`     | double `↔`     | Bidirectional / mutual relationship.              |
+| `"backward"` | back arrow `←` | Reversed direction (rare; usually re-order ends). |
+
+Default is `"forward"`. Pick `"none"` for ER associations or concept-map links
+that have no inherent direction; `"both"` for ER many-to-many relationships,
+mutual dependencies, or symmetric concept-map links.
+
 ## ER diagrams (entity–relationship)
 
 ER diagrams are authored with `type: "graph"`. The schema has no dedicated

@@ -409,7 +409,7 @@ function layoutForce(map: MapDocument, _adj: Adjacency): Map<string, { x: number
   return out
 }
 
-function deterministicLayout(map: MapDocument): Map<string, { x: number; y: number }> {
+function runLayout(map: MapDocument): Map<string, { x: number; y: number }> {
   const adj = buildAdjacency(map)
   switch (map.type) {
     case 'tree':
@@ -425,6 +425,100 @@ function deterministicLayout(map: MapDocument): Map<string, { x: number; y: numb
     default:
       return layoutForce(map, adj)
   }
+}
+
+/**
+ * Split a map into connected components (treating edges + parent hints as
+ * undirected links). Returns one MapDocument per component, in original node
+ * order. Returns the original map untouched if there's only one component.
+ */
+function findComponents(map: MapDocument): MapDocument[] {
+  const adj = new Map<string, Set<string>>()
+  for (const n of map.nodes) adj.set(n.id, new Set())
+  for (const e of map.edges) {
+    if (!adj.has(e.from) || !adj.has(e.to)) continue
+    adj.get(e.from)!.add(e.to)
+    adj.get(e.to)!.add(e.from)
+  }
+  for (const n of map.nodes) {
+    if (n.parent && adj.has(n.parent)) {
+      adj.get(n.id)!.add(n.parent)
+      adj.get(n.parent)!.add(n.id)
+    }
+  }
+
+  const visited = new Set<string>()
+  const groups: string[][] = []
+  for (const n of map.nodes) {
+    if (visited.has(n.id)) continue
+    const stack = [n.id]
+    const grp: string[] = []
+    while (stack.length > 0) {
+      const id = stack.pop()!
+      if (visited.has(id)) continue
+      visited.add(id)
+      grp.push(id)
+      for (const nb of adj.get(id) ?? []) {
+        if (!visited.has(nb)) stack.push(nb)
+      }
+    }
+    groups.push(grp)
+  }
+
+  if (groups.length <= 1) return [map]
+
+  return groups.map((grp) => {
+    const ids = new Set(grp)
+    return {
+      ...map,
+      nodes: map.nodes.filter((n) => ids.has(n.id)),
+      edges: map.edges.filter((e) => ids.has(e.from) && ids.has(e.to)),
+    }
+  })
+}
+
+/**
+ * Lay out each connected component independently, then pack components in a
+ * row with padding so disconnected sub-diagrams coexist on the same canvas
+ * without overlap. Vertically centred around y=0.
+ */
+function deterministicLayout(map: MapDocument): Map<string, { x: number; y: number }> {
+  const components = findComponents(map)
+  if (components.length === 1) return runLayout(components[0])
+
+  const COMPONENT_GAP = 140
+  const final = new Map<string, { x: number; y: number }>()
+  let cursorX = 0
+
+  for (const comp of components) {
+    const positions = runLayout(comp)
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const n of comp.nodes) {
+      const p = positions.get(n.id) ?? { x: 0, y: 0 }
+      const s = measureNode(n)
+      minX = Math.min(minX, p.x - s.width / 2)
+      maxX = Math.max(maxX, p.x + s.width / 2)
+      minY = Math.min(minY, p.y - s.height / 2)
+      maxY = Math.max(maxY, p.y + s.height / 2)
+    }
+    if (!isFinite(minX)) {
+      minX = 0
+      maxX = 0
+      minY = 0
+      maxY = 0
+    }
+    const dx = cursorX - minX
+    const dy = -(minY + maxY) / 2
+    for (const n of comp.nodes) {
+      const p = positions.get(n.id) ?? { x: 0, y: 0 }
+      final.set(n.id, { x: p.x + dx, y: p.y + dy })
+    }
+    cursorX += maxX - minX + COMPONENT_GAP
+  }
+  return final
 }
 
 export function layoutMap(map: MapDocument): LaidOutMap {

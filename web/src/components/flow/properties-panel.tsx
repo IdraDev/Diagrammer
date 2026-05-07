@@ -39,7 +39,13 @@ const COLORS: NodeColor[] = [
 const EMPHASES: NodeEmphasis[] = ['subtle', 'normal', 'strong']
 
 const EDGE_STYLES: EdgeStyle[] = ['solid', 'dashed', 'dotted']
-const EDGE_DIRECTIONS: EdgeDirection[] = ['forward', 'backward', 'both', 'none']
+
+const EDGE_DIRECTIONS: { value: EdgeDirection; label: string; icon: string }[] = [
+  { value: 'none', label: 'Line', icon: '—' },
+  { value: 'forward', label: 'Arrow', icon: '→' },
+  { value: 'both', label: 'Double', icon: '↔' },
+  { value: 'backward', label: 'Back', icon: '←' },
+]
 
 interface NodePanelProps {
   node: StandardFlowNode
@@ -187,21 +193,24 @@ export function EdgePropertiesPanel({
           ))}
         </div>
       </Field>
-      <Field label="Direction">
-        <div className="grid grid-cols-2 gap-1.5">
+      <Field label="Marker">
+        <div className="grid grid-cols-4 gap-1.5">
           {EDGE_DIRECTIONS.map((d) => (
             <button
-              key={d}
+              key={d.value}
               type="button"
-              onClick={() => onChange({ direction: d })}
+              title={d.label}
+              aria-label={d.label}
+              onClick={() => onChange({ direction: d.value })}
               className={cn(
-                'rounded-md border px-2 py-1.5 text-xs capitalize transition-colors',
-                (data?.direction ?? 'forward') === d
+                'flex flex-col items-center gap-0.5 rounded-md border px-2 py-1.5 text-xs transition-colors',
+                (data?.direction ?? 'forward') === d.value
                   ? 'border-[var(--color-foreground)] bg-[var(--color-secondary)]'
                   : 'border-[var(--color-border)] hover:bg-[var(--color-muted)]',
               )}
             >
-              {d}
+              <span className="text-base leading-none">{d.icon}</span>
+              <span className="text-[10px] text-[var(--color-muted-foreground)]">{d.label}</span>
             </button>
           ))}
         </div>
