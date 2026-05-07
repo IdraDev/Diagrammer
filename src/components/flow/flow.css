@@ -1,0 +1,47 @@
+/* React Flow theme overrides — keep the default attribution hidden, soften
+   handles/edges, hide the default minimap, and align selection styling with
+   our token system. */
+
+.react-flow {
+  --xy-background-color: transparent;
+  --xy-edge-stroke-default: hsl(240 6% 38%);
+  --xy-edge-stroke-selected-default: hsl(240 10% 12%);
+  --xy-handle-background-color-default: var(--color-background);
+  --xy-handle-border-color-default: var(--color-foreground);
+  --xy-selection-background-color-default: color-mix(
+    in oklab,
+    var(--color-foreground) 8%,
+    transparent
+  );
+  --xy-selection-border-default: 1px dashed
+    color-mix(in oklab, var(--color-foreground) 35%, transparent);
+}
+
+.react-flow.dark {
+  --xy-edge-stroke-default: hsl(240 5% 60%);
+  --xy-edge-stroke-selected-default: hsl(0 0% 96%);
+}
+
+.react-flow__node-standard {
+  /* The custom node manages its own dimensions via inline styles. */
+  font-family: var(--font-sans);
+}
+
+.react-flow__handle {
+  border-radius: 9999px !important;
+}
+
+.react-flow__edge-path {
+  transition: stroke 120ms ease;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  filter: drop-shadow(0 0 0 var(--xy-edge-stroke-selected-default));
+}
+
+/* Selection ring around our custom nodes */
+.react-flow__node.selected .standard-node-frame {
+  outline: 2px solid color-mix(in oklab, var(--color-foreground) 45%, transparent);
+  outline-offset: 4px;
+  border-radius: 6px;
+}

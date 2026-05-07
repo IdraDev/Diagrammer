@@ -1,0 +1,71 @@
+{
+  "version": "1",
+  "type": "mindmap",
+  "title": "Launching a **SaaS**",
+  "description": "Workstreams that typically gate a product launch.",
+  "meta": {
+    "author": "standard-map example",
+    "tags": ["example", "mindmap"]
+  },
+  "nodes": [
+    { "id": "root", "label": "**SaaS launch**", "description": "six weeks out", "emphasis": "strong", "shape": "rounded" },
+
+    { "id": "eng", "label": "Engineering", "color": "blue" },
+    { "id": "eng-1", "label": "Backend `API`", "parent": "eng" },
+    { "id": "eng-2", "label": "Web app", "parent": "eng" },
+    { "id": "eng-3", "label": "Mobile *(later)*", "parent": "eng" },
+    { "id": "eng-4", "label": "Data pipeline", "parent": "eng" },
+
+    { "id": "design", "label": "Design", "color": "violet" },
+    { "id": "design-1", "label": "Brand", "parent": "design" },
+    { "id": "design-2", "label": "Onboarding flow", "parent": "design" },
+    { "id": "design-3", "label": "Empty states", "parent": "design" },
+
+    { "id": "gtm", "label": "Go-to-market", "color": "amber" },
+    { "id": "gtm-1", "label": "**Positioning**", "parent": "gtm" },
+    { "id": "gtm-2", "label": "Pricing page", "parent": "gtm" },
+    { "id": "gtm-3", "label": "Launch post", "parent": "gtm" },
+    { "id": "gtm-4", "label": "Outbound list", "parent": "gtm" },
+
+    { "id": "ops", "label": "Operations", "color": "green" },
+    { "id": "ops-1", "label": "Status page", "parent": "ops" },
+    { "id": "ops-2", "label": "Oncall rotation", "parent": "ops" },
+    { "id": "ops-3", "label": "Support runbook", "parent": "ops" },
+
+    { "id": "fin", "label": "Finance", "color": "cyan" },
+    { "id": "fin-1", "label": "`LTV / CAC` model", "parent": "fin" },
+    { "id": "fin-2", "label": "Burn forecast", "parent": "fin" },
+
+    { "id": "risk", "label": "Risks", "color": "rose" },
+    { "id": "risk-1", "label": "Capacity", "parent": "risk" },
+    { "id": "risk-2", "label": "Pricing fit", "parent": "risk" },
+    { "id": "risk-3", "label": "Churn", "parent": "risk" }
+  ],
+  "edges": [
+    { "from": "root", "to": "eng" },
+    { "from": "root", "to": "design" },
+    { "from": "root", "to": "gtm" },
+    { "from": "root", "to": "ops" },
+    { "from": "root", "to": "fin" },
+    { "from": "root", "to": "risk" },
+    { "from": "eng", "to": "eng-1" },
+    { "from": "eng", "to": "eng-2" },
+    { "from": "eng", "to": "eng-3" },
+    { "from": "eng", "to": "eng-4" },
+    { "from": "design", "to": "design-1" },
+    { "from": "design", "to": "design-2" },
+    { "from": "design", "to": "design-3" },
+    { "from": "gtm", "to": "gtm-1" },
+    { "from": "gtm", "to": "gtm-2" },
+    { "from": "gtm", "to": "gtm-3" },
+    { "from": "gtm", "to": "gtm-4" },
+    { "from": "ops", "to": "ops-1" },
+    { "from": "ops", "to": "ops-2" },
+    { "from": "ops", "to": "ops-3" },
+    { "from": "fin", "to": "fin-1" },
+    { "from": "fin", "to": "fin-2" },
+    { "from": "risk", "to": "risk-1" },
+    { "from": "risk", "to": "risk-2" },
+    { "from": "risk", "to": "risk-3" }
+  ]
+}
