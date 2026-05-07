@@ -883,6 +883,11 @@ function EmptyState({
         <p className="mt-2 max-w-sm text-sm text-[var(--color-muted-foreground)]">
           Open a JSON map your model authored, or build one by hand on the canvas.
         </p>
+        <p className="mt-3 max-w-sm rounded-md border border-[var(--color-border)] bg-[var(--color-muted)]/40 px-3 py-2 text-[11px] text-[var(--color-muted-foreground)]">
+          <strong className="text-[var(--color-foreground)]">No backend yet.</strong>{' '}
+          Maps live in your browser only — export anything you want to keep.
+          Persistent storage is on the roadmap, after the viewer + schema work.
+        </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
           <Button onClick={onNewMap} className="gap-2">
             <FilePlus2 />

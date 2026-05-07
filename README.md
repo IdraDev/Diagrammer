@@ -220,7 +220,30 @@ In-app **Examples** menu carries one of each layout type:
 Drop any `*.json` from [`web/examples/`](./web/examples) onto the canvas, or paste straight from clipboard.
 
 > [!IMPORTANT]
-> Diagrammer doesn't talk to any backend. Everything (recents, prefs, the active map) lives in your browser's `localStorage`. Clear it, lose it. Export your maps if you care.
+> **No persistent storage / no backend — for now.** Diagrammer currently has
+> zero server-side persistence. Everything (recents, prefs, the active map)
+> lives in your browser's `localStorage`. Clear the site data, lose the maps.
+> **Export your maps if you care.**
+>
+> Persistent storage (cloud sync / accounts / shared workspaces) is planned
+> but **not the next milestone**. The current focus is hardening the viewer +
+> authoring schema first; persistence will land once the foundations are
+> solid. Until then, treat Diagrammer as a stateless renderer over JSON files
+> you own.
+
+## Roadmap
+
+In rough order of what I'm working on:
+
+1. **Now** — polish the schema, layouts, edit-mode UX, and authoring skill.
+   Multi-group canvas, edge markers, ER conventions, better packing.
+2. **Next** — additional map types and finer-grained per-group styling
+   (background, label, collapse).
+3. **Later** — optional persistent storage backend (self-hostable). No
+   account walls, no proprietary format. Stays opt-in; the local-first JSON
+   workflow remains the default.
+
+If you want a feature pulled forward, open an issue.
 
 ## Star This Repo
 
