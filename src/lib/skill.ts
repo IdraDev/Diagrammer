@@ -35,7 +35,7 @@ unless the user explicitly asks for it; emit one fenced JSON block.
 | \`mindmap\`   | Brainstorming, branches radiating from a single central topic.    |
 | \`tree\`      | Strict hierarchy with one parent per child (org chart, taxonomy). |
 | \`flowchart\` | Process or decision flow with directed steps.                     |
-| \`graph\`     | Arbitrary network: dependencies, relationships, citations.        |
+| \`graph\`     | Arbitrary network: dependencies, relationships, citations, **ER diagrams**. |
 | \`concept\`   | Concept map with labelled, often bidirectional, links.            |
 | \`timeline\`  | Linear sequence of events or milestones.                          |
 
@@ -112,6 +112,84 @@ Avoid links inside node labels; put them in \`description\` instead.
   out of the map entirely.
 - Avoid cycles in \`tree\` and \`flowchart\`. Use \`graph\` or \`concept\` if
   cycles are essential.
+
+## ER diagrams (entity–relationship)
+
+ER diagrams are authored with \`type: "graph"\`. The schema has no dedicated
+attribute list, but the existing fields cover the common case:
+
+- **Entity** → one node per table/entity. Set \`shape: "rectangle"\` and
+  \`label: "**EntityName**"\` (bold). Use \`description\` to list the
+  attributes inline, comma-separated, with \`(PK)\` / \`(FK)\` markers — keep
+  it under ~80 chars; if the entity is wide, split it into two lines via
+  multiple short attributes or move secondary fields out of the diagram.
+- **Weak entity / lookup** → \`color: "slate"\` and/or \`emphasis: "subtle"\`.
+- **Primary domain entity** → \`color: "blue"\` or \`emphasis: "strong"\`.
+- **Relationship** → an edge between the two entities. Put the verb plus
+  cardinality in \`label\`, e.g. \`"places (1—N)"\`, \`"has (1—1)"\`,
+  \`"tagged with (M—N)"\`. Use \`direction: "both"\` when the relationship is
+  not directional (most ER links).
+- **Chen-style explicit relationship node** (optional, only when the
+  relationship itself carries attributes): add an intermediate node with
+  \`shape: "diamond"\` and edges \`entityA → relNode → entityB\`, each edge
+  labelled with its side's cardinality (\`1\`, \`N\`, \`M\`).
+- **Cardinality notation**: pick one and stay consistent. Recommended:
+  \`1—1\`, \`1—N\`, \`M—N\`. Also acceptable: \`1..1\`, \`0..N\`, \`1..*\`.
+
+### ER worked example
+
+\`\`\`json
+{
+  "version": "1",
+  "type": "graph",
+  "title": "Order management ER",
+  "description": "Customers, orders, line items, products.",
+  "nodes": [
+    {
+      "id": "customer",
+      "label": "**Customer**",
+      "description": "id (PK), email, name, created_at",
+      "shape": "rectangle",
+      "color": "blue",
+      "emphasis": "strong"
+    },
+    {
+      "id": "order",
+      "label": "**Order**",
+      "description": "id (PK), customer_id (FK), placed_at, status",
+      "shape": "rectangle",
+      "color": "blue"
+    },
+    {
+      "id": "line_item",
+      "label": "**LineItem**",
+      "description": "id (PK), order_id (FK), product_id (FK), qty, unit_price",
+      "shape": "rectangle"
+    },
+    {
+      "id": "product",
+      "label": "**Product**",
+      "description": "id (PK), sku, name, price",
+      "shape": "rectangle",
+      "color": "green"
+    },
+    {
+      "id": "category",
+      "label": "**Category**",
+      "description": "id (PK), name",
+      "shape": "rectangle",
+      "color": "slate",
+      "emphasis": "subtle"
+    }
+  ],
+  "edges": [
+    { "from": "customer", "to": "order",     "label": "places (1—N)",      "direction": "both" },
+    { "from": "order",    "to": "line_item", "label": "contains (1—N)",    "direction": "both" },
+    { "from": "product",  "to": "line_item", "label": "appears in (1—N)",  "direction": "both" },
+    { "from": "category", "to": "product",   "label": "groups (1—N)",      "direction": "both" }
+  ]
+}
+\`\`\`
 
 ## Worked example
 

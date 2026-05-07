@@ -14,6 +14,7 @@ auto-laid-out per type.
 
 - **Six map types** (`mindmap`, `tree`, `flowchart`, `graph`, `concept`,
   `timeline`) with an auto-layout per type — no coordinates required.
+  **ER diagrams** are authored as `graph` (see [`SKILL.md`](./SKILL.md)).
 - **Pannable, zoomable canvas** powered by React Flow, with smooth fit-to-view.
 - **Edit mode**: drag nodes to reposition, connect handles to create edges,
   double-click a node to rename, and use the side panel to change shape,
