@@ -1,7 +1,8 @@
-<h1 align="center">
-  <img src="https://em-content.zobj.net/source/apple/391/triangular-ruler_1f4d0.png" width="64" align="center" />
-  &nbsp;Diagrammer
-</h1>
+<p align="center">
+  <img src="https://em-content.zobj.net/source/apple/391/triangular-ruler_1f4d0.png" width="120" />
+</p>
+
+<h1 align="center">Diagrammer</h1>
 
 <p align="center">
   <strong>tell the model, get the diagram</strong>
