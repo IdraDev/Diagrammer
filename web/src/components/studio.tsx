@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addEdge,
   useEdgesState,
@@ -8,9 +8,9 @@ import {
   type EdgeChange,
   type NodeChange,
   type OnSelectionChangeParams,
-} from '@xyflow/react'
-import { useDrop } from 'react-dnd'
-import { NativeTypes } from 'react-dnd-html5-backend'
+} from "@xyflow/react";
+import { useDrop } from "react-dnd";
+import { NativeTypes } from "react-dnd-html5-backend";
 import {
   ClipboardPaste,
   Download,
@@ -28,32 +28,32 @@ import {
   Sparkles,
   Sun,
   X,
-} from 'lucide-react'
-import { Flow } from './flow/flow'
+} from "lucide-react";
+import { Flow } from "./flow/flow";
 import {
   EdgePropertiesPanel,
   NodePropertiesPanel,
-} from './flow/properties-panel'
+} from "./flow/properties-panel";
 import {
   SHAPE_DRAG_TYPE,
   ShapePalette,
   type ShapeDragItem,
-} from './flow/shape-palette'
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipProvider } from '@/components/ui/tooltip'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { SkillDialog } from './skill-dialog'
-import { PasteDialog } from './paste-dialog'
-import { MenuDialog } from './menu-dialog'
-import { MapTypeIcon } from './map-type-icon'
+} from "./flow/shape-palette";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { SkillDialog } from "./skill-dialog";
+import { PasteDialog } from "./paste-dialog";
+import { MenuDialog } from "./menu-dialog";
+import { MapTypeIcon } from "./map-type-icon";
 import {
   buildNode,
   flowToMap,
   mapToFlow,
   type StandardFlowEdge,
   type StandardFlowNode,
-} from '@/lib/flow-adapter'
+} from "@/lib/flow-adapter";
 import {
   deleteRecent,
   getPrefs,
@@ -61,103 +61,105 @@ import {
   saveRecent,
   setPrefs,
   type RecentMap,
-} from '@/lib/storage'
+} from "@/lib/storage";
 import {
   tryParseMap,
   type EdgeDirection,
   type EdgeStyle,
   type NodeShape,
   type MapDocument,
-} from '@/lib/schema'
-import { EXAMPLES, type ExampleEntry } from '@/lib/examples'
-import { cn, downloadJson, slugify } from '@/lib/utils'
-import { InlineMarkdown, stripMarkdown } from '@/lib/markdown'
-import { useTheme } from '@/lib/theme'
+} from "@/lib/schema";
+import { EXAMPLES, type ExampleEntry } from "@/lib/examples";
+import { cn, downloadJson, slugify } from "@/lib/utils";
+import { InlineMarkdown, stripMarkdown } from "@/lib/markdown";
+import { useTheme } from "@/lib/theme";
 
 interface ActiveMap {
-  map: MapDocument
-  recent: RecentMap
+  map: MapDocument;
+  recent: RecentMap;
 }
 
-const PERSIST_DEBOUNCE_MS = 600
+const PERSIST_DEBOUNCE_MS = 600;
 
 export function Studio() {
-  const { theme, setTheme, isDark } = useTheme()
-  const [active, setActive] = useState<ActiveMap | null>(null)
-  const [recents, setRecents] = useState<RecentMap[]>([])
-  const [skillOpen, setSkillOpen] = useState(false)
-  const [pasteOpen, setPasteOpen] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [titleEditing, setTitleEditing] = useState(false)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const { fitView, zoomIn, zoomOut, screenToFlowPosition } = useReactFlow()
+  const { theme, setTheme, isDark } = useTheme();
+  const [active, setActive] = useState<ActiveMap | null>(null);
+  const [recents, setRecents] = useState<RecentMap[]>([]);
+  const [skillOpen, setSkillOpen] = useState(false);
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [titleEditing, setTitleEditing] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { fitView, zoomIn, zoomOut, screenToFlowPosition } = useReactFlow();
 
   // React Flow state — owned at the Studio level so the properties panel and
   // toolbar can read/mutate it directly without round-tripping props.
-  const [nodes, setNodes, onNodesChange] = useNodesState<StandardFlowNode>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<StandardFlowEdge>([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<StandardFlowNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<StandardFlowEdge>([]);
   const [selection, setSelection] = useState<OnSelectionChangeParams>({
     nodes: [],
     edges: [],
-  })
+  });
 
   // Restore the last opened map and the recents list on mount.
   useEffect(() => {
-    const list = getRecents()
-    setRecents(list)
-    const lastId = getPrefs().lastOpenedId
+    const list = getRecents();
+    setRecents(list);
+    const lastId = getPrefs().lastOpenedId;
     if (lastId) {
-      const r = list.find((x) => x.id === lastId)
-      if (r) setActive({ map: r.map, recent: r })
+      const r = list.find((x) => x.id === lastId);
+      if (r) setActive({ map: r.map, recent: r });
     }
-  }, [])
+  }, []);
 
   // Persist the active map id between reloads.
   useEffect(() => {
-    setPrefs({ lastOpenedId: active?.recent.id })
-  }, [active])
+    setPrefs({ lastOpenedId: active?.recent.id });
+  }, [active]);
 
   // Tab title — strip markdown so the document title stays plain text.
   useEffect(() => {
     document.title = active
       ? `${stripMarkdown(active.map.title)} · Diagrammer`
-      : 'Diagrammer'
-  }, [active])
+      : "Diagrammer";
+  }, [active]);
 
   // When the active map changes (different recent.id), seed RF state.
   useEffect(() => {
     if (!active) {
-      setNodes([])
-      setEdges([])
-      setIsEditing(false)
-      setTitleEditing(false)
-      return
+      setNodes([]);
+      setEdges([]);
+      setIsEditing(false);
+      setTitleEditing(false);
+      return;
     }
-    const graph = mapToFlow(active.map)
-    setNodes(graph.nodes)
-    setEdges(graph.edges)
-    setTitleEditing(false)
+    const graph = mapToFlow(active.map);
+    setNodes(graph.nodes);
+    setEdges(graph.edges);
+    setTitleEditing(false);
     // Auto-enter edit mode for blank local maps.
-    setIsEditing(active.recent.source === 'local' && active.map.nodes.length <= 1)
+    setIsEditing(
+      active.recent.source === "local" && active.map.nodes.length <= 1,
+    );
     // Fit view after the next paint so RF has dimensions.
     const t = setTimeout(() => {
       try {
-        fitView({ padding: 0.18, duration: 250 })
+        fitView({ padding: 0.18, duration: 250 });
       } catch {
         // RF can throw if no nodes are measured yet — safe to ignore.
       }
-    }, 80)
-    return () => clearTimeout(t)
+    }, 80);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active?.recent.id])
+  }, [active?.recent.id]);
 
   // Persist edits back to the recent (debounced).
   useEffect(() => {
-    if (!active) return
+    if (!active) return;
     const t = setTimeout(() => {
-      const next = flowToMap(active.map, nodes, edges)
+      const next = flowToMap(active.map, nodes, edges);
       const updated = saveRecent({
         id: active.recent.id,
         title: next.title,
@@ -167,27 +169,27 @@ export function Studio() {
         source: active.recent.source,
         fileName: active.recent.fileName,
         map: next,
-      })
+      });
       // Update the local cache without forcing a remount.
       setActive((prev) =>
         prev && prev.recent.id === updated.id
           ? { map: next, recent: updated }
           : prev,
-      )
-      setRecents(getRecents())
-    }, PERSIST_DEBOUNCE_MS)
-    return () => clearTimeout(t)
+      );
+      setRecents(getRecents());
+    }, PERSIST_DEBOUNCE_MS);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes, edges])
+  }, [nodes, edges]);
 
-  const refreshRecents = useCallback(() => setRecents(getRecents()), [])
+  const refreshRecents = useCallback(() => setRecents(getRecents()), []);
 
   // ---- Open helpers ----
 
   const openMap = useCallback(
     (
       map: MapDocument,
-      source: RecentMap['source'],
+      source: RecentMap["source"],
       fileName: string | undefined,
     ) => {
       const recent = saveRecent({
@@ -198,58 +200,58 @@ export function Studio() {
         source,
         fileName,
         map,
-      })
-      setActive({ map, recent })
-      setRecents(getRecents())
+      });
+      setActive({ map, recent });
+      setRecents(getRecents());
     },
     [],
-  )
+  );
 
   const openExample = useCallback(
-    (ex: ExampleEntry) => openMap(ex.map, 'example', `${ex.slug}.json`),
+    (ex: ExampleEntry) => openMap(ex.map, "example", `${ex.slug}.json`),
     [openMap],
-  )
+  );
 
   const openFromRecent = useCallback((r: RecentMap) => {
-    setActive({ map: r.map, recent: r })
-  }, [])
+    setActive({ map: r.map, recent: r });
+  }, []);
 
   const handleFiles = useCallback(
     async (files: FileList | File[]) => {
-      const file = Array.from(files)[0]
-      if (!file) return
-      const text = await file.text()
-      const result = tryParseMap(text)
+      const file = Array.from(files)[0];
+      if (!file) return;
+      const text = await file.text();
+      const result = tryParseMap(text);
       if (!result.ok || !result.map) {
-        alert(result.issues[0]?.message ?? 'Invalid map file.')
-        return
+        alert(result.issues[0]?.message ?? "Invalid map file.");
+        return;
       }
-      openMap(result.map, 'file', file.name)
+      openMap(result.map, "file", file.name);
     },
     [openMap],
-  )
+  );
 
-  const onPickFile = useCallback(() => fileInputRef.current?.click(), [])
+  const onPickFile = useCallback(() => fileInputRef.current?.click(), []);
 
-  const onCloseMap = useCallback(() => setActive(null), [])
+  const onCloseMap = useCallback(() => setActive(null), []);
 
   const onDownload = useCallback(() => {
-    if (!active) return
-    const next = flowToMap(active.map, nodes, edges)
-    downloadJson(`${slugify(stripMarkdown(next.title))}.json`, next)
-  }, [active, edges, nodes])
+    if (!active) return;
+    const next = flowToMap(active.map, nodes, edges);
+    downloadJson(`${slugify(stripMarkdown(next.title))}.json`, next);
+  }, [active, edges, nodes]);
 
   const onNewMap = useCallback(() => {
     const seed = buildNode({
       id: `n_${Math.random().toString(36).slice(2, 8)}`,
-      label: 'Topic',
-      shape: 'rounded',
-      emphasis: 'strong',
-    })
+      label: "Topic",
+      shape: "rounded",
+      emphasis: "strong",
+    });
     const map: MapDocument = {
-      version: '1',
-      type: 'mindmap',
-      title: 'Untitled map',
+      version: "1",
+      type: "mindmap",
+      title: "Untitled map",
       nodes: [
         {
           id: seed.id,
@@ -261,9 +263,9 @@ export function Studio() {
         },
       ],
       edges: [],
-    }
-    openMap(map, 'local', undefined)
-  }, [openMap])
+    };
+    openMap(map, "local", undefined);
+  }, [openMap]);
 
   // ---- React Flow event handlers ----
 
@@ -272,77 +274,73 @@ export function Studio() {
       // Block destructive edits when not in edit mode.
       const filtered = isEditing
         ? changes
-        : changes.filter(
-            (c) => c.type === 'select' || c.type === 'dimensions',
-          )
-      onNodesChange(filtered)
+        : changes.filter((c) => c.type === "select" || c.type === "dimensions");
+      onNodesChange(filtered);
     },
     [isEditing, onNodesChange],
-  )
+  );
 
   const handleEdgesChange = useCallback(
     (changes: EdgeChange<StandardFlowEdge>[]) => {
       const filtered = isEditing
         ? changes
-        : changes.filter((c) => c.type === 'select')
-      onEdgesChange(filtered)
+        : changes.filter((c) => c.type === "select");
+      onEdgesChange(filtered);
     },
     [isEditing, onEdgesChange],
-  )
+  );
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (!isEditing) return
+      if (!isEditing) return;
       setEdges((eds) =>
         addEdge<StandardFlowEdge>(
           {
             ...connection,
-            type: 'standard',
-            data: { style: 'solid', direction: 'forward' },
+            type: "standard",
+            data: { style: "solid", direction: "forward" },
           },
           eds,
         ),
-      )
+      );
     },
     [isEditing, setEdges],
-  )
+  );
 
   const onSelectionChange = useCallback((s: OnSelectionChangeParams) => {
-    setSelection({ nodes: s.nodes, edges: s.edges })
-  }, [])
+    setSelection({ nodes: s.nodes, edges: s.edges });
+  }, []);
 
   const onPaneClick = useCallback(() => {
-    if (titleEditing) setTitleEditing(false)
-  }, [titleEditing])
+    if (titleEditing) setTitleEditing(false);
+  }, [titleEditing]);
 
   const onNodeLabelChange = useCallback(
     (id: string, label: string) => {
       setNodes((ns) =>
-        ns.map((n) =>
-          n.id === id ? { ...n, data: { ...n.data, label } } : n,
-        ),
-      )
+        ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, label } } : n)),
+      );
     },
     [setNodes],
-  )
+  );
 
   // ---- Editor toolbar actions ----
 
   const addNodeAt = useCallback(
     (flowPosition: { x: number; y: number }, shape?: NodeShape) => {
-      const id = `n_${Math.random().toString(36).slice(2, 8)}`
+      const id = `n_${Math.random().toString(36).slice(2, 8)}`;
       const built = buildNode({
         id,
-        label: 'New node',
-        shape: shape ?? 'rounded',
-      })
+        label: "New node",
+        shape: shape ?? "rounded",
+      });
       setNodes((ns) =>
         ns
           .map((n) => ({ ...n, selected: false }))
           .concat([
             {
               id,
-              type: 'standard' as const,
+              type: "standard" as const,
               position: {
                 x: flowPosition.x - built.width / 2,
                 y: flowPosition.y - built.height / 2,
@@ -352,41 +350,41 @@ export function Studio() {
               selected: true,
               data: {
                 label: built.label,
-                shape: built.shape ?? 'rounded',
-                color: built.color ?? 'default',
-                emphasis: built.emphasis ?? 'normal',
+                shape: built.shape ?? "rounded",
+                color: built.color ?? "default",
+                emphasis: built.emphasis ?? "normal",
                 width: built.width,
                 height: built.height,
               },
             },
           ]),
-      )
+      );
     },
     [setNodes],
-  )
+  );
 
   const addNode = useCallback(
     (shape?: NodeShape) => {
-      const rect = containerRef.current?.getBoundingClientRect()
+      const rect = containerRef.current?.getBoundingClientRect();
       const screenCenter = rect
         ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-        : { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-      const flowCenter = screenToFlowPosition(screenCenter)
-      addNodeAt(flowCenter, shape)
+        : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      const flowCenter = screenToFlowPosition(screenCenter);
+      addNodeAt(flowCenter, shape);
     },
     [addNodeAt, screenToFlowPosition],
-  )
+  );
 
   const updateSelectedNode = useCallback(
-    (patch: Partial<StandardFlowNode['data']>) => {
-      const id = selection.nodes[0]?.id
-      if (!id) return
+    (patch: Partial<StandardFlowNode["data"]>) => {
+      const id = selection.nodes[0]?.id;
+      if (!id) return;
       setNodes((ns) =>
         ns.map((n) => {
-          if (n.id !== id) return n
-          const data = { ...n.data, ...patch }
+          if (n.id !== id) return n;
+          const data = { ...n.data, ...patch };
           // Re-measure if the label or description changed.
-          if ('label' in patch || 'description' in patch) {
+          if ("label" in patch || "description" in patch) {
             const rebuilt = buildNode({
               id,
               label: data.label,
@@ -394,69 +392,73 @@ export function Studio() {
               shape: data.shape,
               color: data.color,
               emphasis: data.emphasis,
-            })
-            data.width = rebuilt.width
-            data.height = rebuilt.height
+            });
+            data.width = rebuilt.width;
+            data.height = rebuilt.height;
             return {
               ...n,
               width: rebuilt.width,
               height: rebuilt.height,
               data,
-            }
+            };
           }
-          return { ...n, data }
+          return { ...n, data };
         }),
-      )
+      );
     },
     [selection.nodes, setNodes],
-  )
+  );
 
   const deleteSelectedNode = useCallback(() => {
-    const id = selection.nodes[0]?.id
-    if (!id) return
-    setNodes((ns) => ns.filter((n) => n.id !== id))
-    setEdges((es) => es.filter((e) => e.source !== id && e.target !== id))
-  }, [selection.nodes, setNodes, setEdges])
+    const id = selection.nodes[0]?.id;
+    if (!id) return;
+    setNodes((ns) => ns.filter((n) => n.id !== id));
+    setEdges((es) => es.filter((e) => e.source !== id && e.target !== id));
+  }, [selection.nodes, setNodes, setEdges]);
 
   const updateSelectedEdge = useCallback(
-    (patch: { label?: string; style?: EdgeStyle; direction?: EdgeDirection }) => {
-      const id = selection.edges[0]?.id
-      if (!id) return
+    (patch: {
+      label?: string;
+      style?: EdgeStyle;
+      direction?: EdgeDirection;
+    }) => {
+      const id = selection.edges[0]?.id;
+      if (!id) return;
       setEdges((es) =>
         es.map((e) => {
-          if (e.id !== id) return e
-          const next: StandardFlowEdge = { ...e }
-          if ('label' in patch) {
+          if (e.id !== id) return e;
+          const next: StandardFlowEdge = { ...e };
+          if ("label" in patch) {
             next.label =
-              patch.label && patch.label.length > 0 ? patch.label : undefined
+              patch.label && patch.label.length > 0 ? patch.label : undefined;
           }
           if (patch.style || patch.direction) {
             next.data = {
-              style: patch.style ?? e.data?.style ?? 'solid',
-              direction: patch.direction ?? e.data?.direction ?? 'forward',
-            }
+              style: patch.style ?? e.data?.style ?? "solid",
+              direction: patch.direction ?? e.data?.direction ?? "forward",
+            };
           }
-          return next
+          return next;
         }),
-      )
+      );
     },
     [selection.edges, setEdges],
-  )
+  );
 
   const deleteSelectedEdge = useCallback(() => {
-    const id = selection.edges[0]?.id
-    if (!id) return
-    setEdges((es) => es.filter((e) => e.id !== id))
-  }, [selection.edges, setEdges])
+    const id = selection.edges[0]?.id;
+    if (!id) return;
+    setEdges((es) => es.filter((e) => e.id !== id));
+  }, [selection.edges, setEdges]);
 
   const onRenameTitle = useCallback(
     (next: string) => {
-      const trimmed = next.trim()
+      const trimmed = next.trim();
       if (!active || trimmed.length === 0 || trimmed === active.map.title) {
-        setTitleEditing(false)
-        return
+        setTitleEditing(false);
+        return;
       }
-      const updatedMap = { ...active.map, title: trimmed }
+      const updatedMap = { ...active.map, title: trimmed };
       const updatedRecent = saveRecent({
         id: active.recent.id,
         title: trimmed,
@@ -466,26 +468,25 @@ export function Studio() {
         source: active.recent.source,
         fileName: active.recent.fileName,
         map: flowToMap(updatedMap, nodes, edges),
-      })
-      setActive({ map: updatedMap, recent: updatedRecent })
-      setRecents(getRecents())
-      setTitleEditing(false)
+      });
+      setActive({ map: updatedMap, recent: updatedRecent });
+      setRecents(getRecents());
+      setTitleEditing(false);
     },
     [active, edges, nodes],
-  )
+  );
 
   const selectedNode = useMemo(() => {
-    if (selection.nodes.length === 0) return null
-    return nodes.find((n) => n.id === selection.nodes[0].id) ?? null
-  }, [nodes, selection.nodes])
+    if (selection.nodes.length === 0) return null;
+    return nodes.find((n) => n.id === selection.nodes[0].id) ?? null;
+  }, [nodes, selection.nodes]);
 
   const selectedEdge = useMemo(() => {
-    if (selection.edges.length === 0) return null
-    return edges.find((e) => e.id === selection.edges[0].id) ?? null
-  }, [edges, selection.edges])
+    if (selection.edges.length === 0) return null;
+    return edges.find((e) => e.id === selection.edges[0].id) ?? null;
+  }, [edges, selection.edges]);
 
-  const showPropertiesPanel =
-    isEditing && (selectedNode || selectedEdge)
+  const showPropertiesPanel = isEditing && (selectedNode || selectedEdge);
 
   const [{ isOverFile }, drop] = useDrop<
     { files: File[] } | ShapeDragItem,
@@ -495,19 +496,19 @@ export function Studio() {
     () => ({
       accept: [NativeTypes.FILE, SHAPE_DRAG_TYPE],
       drop: (item, monitor) => {
-        const type = monitor.getItemType()
-        const offset = monitor.getClientOffset()
+        const type = monitor.getItemType();
+        const offset = monitor.getClientOffset();
         if (type === NativeTypes.FILE) {
-          const fileItem = item as { files: File[] }
+          const fileItem = item as { files: File[] };
           if (fileItem.files && fileItem.files.length > 0) {
-            void handleFiles(fileItem.files)
+            void handleFiles(fileItem.files);
           }
-          return
+          return;
         }
         if (type === SHAPE_DRAG_TYPE && offset) {
-          if (!isEditing || !active) return
-          const flowPos = screenToFlowPosition({ x: offset.x, y: offset.y })
-          addNodeAt(flowPos, (item as ShapeDragItem).shape)
+          if (!isEditing || !active) return;
+          const flowPos = screenToFlowPosition({ x: offset.x, y: offset.y });
+          addNodeAt(flowPos, (item as ShapeDragItem).shape);
         }
       },
       collect: (monitor) => ({
@@ -518,11 +519,11 @@ export function Studio() {
       }),
     }),
     [active, addNodeAt, handleFiles, isEditing, screenToFlowPosition],
-  )
+  );
 
   useEffect(() => {
-    drop(containerRef)
-  }, [drop])
+    drop(containerRef);
+  }, [drop]);
 
   return (
     <TooltipProvider>
@@ -544,7 +545,7 @@ export function Studio() {
         />
 
         {/* Top-left island */}
-        <div className="absolute left-3 top-3 flex max-w-[min(60%,520px)] items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]/90 p-1 shadow-sm backdrop-blur">
+        <div className="absolute left-3 top-3 flex max-w-[min(60%,520px)] items-center gap-1 rounded-lg border border-(--color-border) bg-(--color-card)/90 p-1 shadow-sm backdrop-blur">
           <Tooltip label="Menu">
             <Button
               variant="ghost"
@@ -565,7 +566,7 @@ export function Studio() {
             <>
               <Separator orientation="vertical" className="mx-1 h-5" />
               <div className="flex min-w-0 items-center gap-1.5 px-1.5">
-                <div className="flex size-6 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-md border border-(--color-border) bg-(--color-muted) text-muted-foreground">
                   <MapTypeIcon type={active.map.type} />
                 </div>
                 {titleEditing ? (
@@ -574,27 +575,27 @@ export function Studio() {
                     defaultValue={active.map.title}
                     onBlur={(e) => onRenameTitle(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter')
-                        onRenameTitle((e.target as HTMLInputElement).value)
-                      if (e.key === 'Escape') setTitleEditing(false)
+                      if (e.key === "Enter")
+                        onRenameTitle((e.target as HTMLInputElement).value);
+                      if (e.key === "Escape") setTitleEditing(false);
                     }}
-                    className="min-w-0 max-w-[260px] rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-1.5 py-0.5 text-sm font-medium outline-none focus:ring-2 focus:ring-[var(--color-ring)]"
+                    className="min-w-0 max-w-[260px] rounded-md border border-(--color-border) bg-(--color-background) px-1.5 py-0.5 text-sm font-medium outline-none focus:ring-2 focus:ring-ring"
                   />
                 ) : (
                   <button
                     type="button"
                     onClick={() => isEditing && setTitleEditing(true)}
                     disabled={!isEditing}
-                    aria-label={isEditing ? 'Rename map' : undefined}
+                    aria-label={isEditing ? "Rename map" : undefined}
                     className={cn(
-                      'truncate text-sm font-medium',
+                      "truncate text-sm font-medium",
                       isEditing
-                        ? 'cursor-pointer hover:underline'
-                        : 'cursor-default disabled:opacity-100',
+                        ? "cursor-pointer hover:underline"
+                        : "cursor-default disabled:opacity-100",
                     )}
                     title={
                       isEditing
-                        ? 'Click to rename'
+                        ? "Click to rename"
                         : stripMarkdown(active.map.title)
                     }
                   >
@@ -613,15 +614,17 @@ export function Studio() {
         </div>
 
         {/* Top-right island */}
-        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]/90 p-1 shadow-sm backdrop-blur">
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-(--color-border) bg-(--color-card)/90 p-1 shadow-sm backdrop-blur">
           {active ? (
             <>
-              <Tooltip label={isEditing ? 'View mode' : 'Edit mode'}>
+              <Tooltip label={isEditing ? "View mode" : "Edit mode"}>
                 <Button
-                  variant={isEditing ? 'default' : 'ghost'}
+                  variant={isEditing ? "default" : "ghost"}
                   size="iconSm"
                   aria-pressed={isEditing}
-                  aria-label={isEditing ? 'Switch to view mode' : 'Switch to edit mode'}
+                  aria-label={
+                    isEditing ? "Switch to view mode" : "Switch to edit mode"
+                  }
                   onClick={() => setIsEditing((v) => !v)}
                 >
                   <Pencil />
@@ -699,7 +702,7 @@ export function Studio() {
           <Tooltip label="GitHub">
             <Button variant="ghost" size="iconSm" aria-label="GitHub" asChild>
               <a
-                href="https://github.com"
+                href="https://github.com/IdraDev/diagrammer/"
                 target="_blank"
                 rel="noreferrer noopener"
               >
@@ -730,7 +733,7 @@ export function Studio() {
         ) : null}
 
         {/* Bottom-right zoom island */}
-        <div className="absolute bottom-3 right-3 flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]/90 p-1 shadow-sm backdrop-blur">
+        <div className="absolute bottom-3 right-3 flex items-center gap-1 rounded-lg border border-(--color-border) bg-(--color-card)/90 p-1 shadow-sm backdrop-blur">
           <Tooltip label="Zoom out  −">
             <Button
               variant="ghost"
@@ -765,7 +768,7 @@ export function Studio() {
 
         {/* Right-side properties panel during edit */}
         {showPropertiesPanel ? (
-          <div className="scrollbar-thin absolute right-3 top-16 max-h-[calc(100vh-140px)] w-72 overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]/95 p-4 shadow-sm backdrop-blur">
+          <div className="scrollbar-thin absolute right-3 top-16 max-h-[calc(100vh-140px)] w-72 overflow-auto rounded-lg border border-(--color-border) bg-(--color-card)/95 p-4 shadow-sm backdrop-blur">
             {selectedNode ? (
               <NodePropertiesPanel
                 node={selectedNode}
@@ -799,15 +802,15 @@ export function Studio() {
           type="file"
           accept="application/json,.json"
           onChange={(e) => {
-            if (e.target.files) handleFiles(e.target.files)
-            e.target.value = ''
+            if (e.target.files) handleFiles(e.target.files);
+            e.target.value = "";
           }}
           className="hidden"
         />
 
         {isOverFile ? (
-          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-[var(--color-background)]/80 backdrop-blur-sm">
-            <div className="rounded-lg border-2 border-dashed border-[var(--color-foreground)]/40 px-8 py-6 text-center">
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-(--color-background)/80 backdrop-blur-sm">
+            <div className="rounded-lg border-2 border-dashed border-(--color-foreground)/40 px-8 py-6 text-center">
               <FileJson className="mx-auto mb-2 size-6" />
               <p className="text-sm font-medium">Drop a Diagrammer JSON file</p>
             </div>
@@ -818,44 +821,44 @@ export function Studio() {
         <PasteDialog
           open={pasteOpen}
           onOpenChange={setPasteOpen}
-          onLoad={(map) => openMap(map, 'paste', undefined)}
+          onLoad={(map) => openMap(map, "paste", undefined)}
         />
         <MenuDialog
           open={menuOpen}
           onOpenChange={setMenuOpen}
           recents={recents}
           onOpenRecent={(r) => {
-            openFromRecent(r)
-            setMenuOpen(false)
+            openFromRecent(r);
+            setMenuOpen(false);
           }}
           onDeleteRecent={(id) => {
-            deleteRecent(id)
-            refreshRecents()
+            deleteRecent(id);
+            refreshRecents();
           }}
           onOpenExample={(ex) => {
-            openExample(ex)
-            setMenuOpen(false)
+            openExample(ex);
+            setMenuOpen(false);
           }}
           onPickFile={() => {
-            setMenuOpen(false)
-            onPickFile()
+            setMenuOpen(false);
+            onPickFile();
           }}
           onPaste={() => {
-            setMenuOpen(false)
-            setPasteOpen(true)
+            setMenuOpen(false);
+            setPasteOpen(true);
           }}
           onSkill={() => {
-            setMenuOpen(false)
-            setSkillOpen(true)
+            setMenuOpen(false);
+            setSkillOpen(true);
           }}
           onNewMap={() => {
-            setMenuOpen(false)
-            onNewMap()
+            setMenuOpen(false);
+            onNewMap();
           }}
         />
       </div>
     </TooltipProvider>
-  )
+  );
 }
 
 function EmptyState({
@@ -865,26 +868,29 @@ function EmptyState({
   onNewMap,
   onPickExample,
 }: {
-  onPickFile: () => void
-  onPaste: () => void
-  onSkill: () => void
-  onNewMap: () => void
-  onPickExample: (ex: ExampleEntry) => void
+  onPickFile: () => void;
+  onPaste: () => void;
+  onSkill: () => void;
+  onNewMap: () => void;
+  onPickExample: (ex: ExampleEntry) => void;
 }) {
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
       <div className="pointer-events-auto flex w-full max-w-md flex-col items-center text-center">
-        <div className="mb-5 flex size-12 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] shadow-sm">
+        <div className="mb-5 flex size-12 items-center justify-center rounded-xl border border-(--color-border) bg-(--color-card) text-(--color-foreground) shadow-sm">
           <Logo size={26} />
         </div>
         <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
           Diagrammer
         </h1>
-        <p className="mt-2 max-w-sm text-sm text-[var(--color-muted-foreground)]">
-          Open a JSON map your model authored, or build one by hand on the canvas.
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          Open a JSON map your model authored, or build one by hand on the
+          canvas.
         </p>
-        <p className="mt-3 max-w-sm rounded-md border border-[var(--color-border)] bg-[var(--color-muted)]/40 px-3 py-2 text-[11px] text-[var(--color-muted-foreground)]">
-          <strong className="text-[var(--color-foreground)]">No backend yet.</strong>{' '}
+        <p className="mt-3 max-w-sm rounded-md border border-(--color-border) bg-(--color-muted)/40 px-3 py-2 text-[11px] text-muted-foreground">
+          <strong className="text-(--color-foreground)">
+            No backend yet.
+          </strong>{" "}
           Maps live in your browser only — export anything you want to keep.
           Persistent storage is on the roadmap, after the viewer + schema work.
         </p>
@@ -907,11 +913,11 @@ function EmptyState({
           </Button>
         </div>
         <div className="mt-8 flex w-full items-center gap-3">
-          <span className="h-px flex-1 bg-[var(--color-border)]" />
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--color-muted-foreground)]">
+          <span className="h-px flex-1 bg-(--color-border)" />
+          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
             or try an example
           </span>
-          <span className="h-px flex-1 bg-[var(--color-border)]" />
+          <span className="h-px flex-1 bg-(--color-border)" />
         </div>
         <div className="mt-4 grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
           {EXAMPLES.map((ex) => (
@@ -919,21 +925,22 @@ function EmptyState({
               key={ex.slug}
               type="button"
               onClick={() => onPickExample(ex)}
-              className="group flex flex-col items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-card)] p-3 transition-colors hover:border-[var(--color-foreground)]/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
+              className="group flex flex-col items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-card) p-3 transition-colors hover:border-(--color-foreground)/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="flex size-7 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)] transition-colors group-hover:text-[var(--color-foreground)]">
+              <div className="flex size-7 items-center justify-center rounded-md border border-(--color-border) bg-(--color-muted) text-muted-foreground transition-colors group-hover:text-(--color-foreground)">
                 <MapTypeIcon type={ex.map.type} />
               </div>
               <span className="text-xs font-medium">{ex.label}</span>
             </button>
           ))}
         </div>
-        <p className="mt-6 text-[11px] text-[var(--color-muted-foreground)]">
-          drag a <code className="font-mono">.json</code> file anywhere on this page
+        <p className="mt-6 text-[11px] text-muted-foreground">
+          drag a <code className="font-mono">.json</code> file anywhere on this
+          page
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 function Logo({ size = 22 }: { size?: number }) {
@@ -959,19 +966,19 @@ function Logo({ size = 22 }: { size?: number }) {
       <line x1="9.6" y1="13.4" x2="5.2" y2="18" />
       <line x1="14.4" y1="13.4" x2="18.8" y2="18" />
     </svg>
-  )
+  );
 }
 
 function ThemeToggle({
   theme,
   setTheme,
 }: {
-  theme: 'system' | 'light' | 'dark'
-  setTheme: (t: 'system' | 'light' | 'dark') => void
+  theme: "system" | "light" | "dark";
+  setTheme: (t: "system" | "light" | "dark") => void;
 }) {
-  const order: ('system' | 'light' | 'dark')[] = ['light', 'dark', 'system']
-  const next = order[(order.indexOf(theme) + 1) % order.length]
-  const Icon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
+  const order: ("system" | "light" | "dark")[] = ["light", "dark", "system"];
+  const next = order[(order.indexOf(theme) + 1) % order.length];
+  const Icon = theme === "light" ? Sun : theme === "dark" ? Moon : Monitor;
   return (
     <Tooltip label={`Theme: ${theme} (click for ${next})`}>
       <Button
@@ -983,5 +990,5 @@ function ThemeToggle({
         <Icon />
       </Button>
     </Tooltip>
-  )
+  );
 }
