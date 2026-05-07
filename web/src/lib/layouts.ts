@@ -320,7 +320,7 @@ function layoutTimeline(map: MapDocument, adj: Adjacency): Map<string, { x: numb
 }
 
 // ---- Graph / Concept (force-directed) ----
-function layoutForce(map: MapDocument, _adj: Adjacency): Map<string, { x: number; y: number }> {
+function layoutForce(map: MapDocument): Map<string, { x: number; y: number }> {
   const ids = map.nodes.map((n) => n.id)
   const N = ids.length
   if (N === 0) return new Map()
@@ -423,7 +423,7 @@ function runLayout(map: MapDocument): Map<string, { x: number; y: number }> {
     case 'graph':
     case 'concept':
     default:
-      return layoutForce(map, adj)
+      return layoutForce(map)
   }
 }
 

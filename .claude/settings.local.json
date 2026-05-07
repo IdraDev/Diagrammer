@@ -13,7 +13,9 @@
       "Bash(curl -sf -o /tmp/md http://localhost:5173/src/lib/markdown.tsx)",
       "Bash(curl -sf -o /tmp/ex http://localhost:5173/src/lib/examples.ts)",
       "WebFetch(domain:github.com)",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }
