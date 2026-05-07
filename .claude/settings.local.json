@@ -34,7 +34,8 @@
       "Bash(kill 1146)",
       "Bash(kill 1284)",
       "Bash(bunx tsc *)",
-      "Bash(bunx eslint *)"
+      "Bash(bunx eslint *)",
+      "Bash(echo \"exit=$?\")"
     ]
   }
 }

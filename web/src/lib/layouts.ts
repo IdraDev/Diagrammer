@@ -531,7 +531,9 @@ function deterministicLayout(map: MapDocument): Map<string, { x: number; y: numb
  * minimal — nodes shift the shortest distance needed to clear.
  */
 function resolveOverlaps(nodes: LaidOutNode[]) {
-  const PAD = 16
+  // Small pad so the safety net only fires on actual overlap or near-touch,
+  // and doesn't perturb hand-placed nodes the user spaced tightly on purpose.
+  const PAD = 4
   const MAX_ITER = 60
   for (let iter = 0; iter < MAX_ITER; iter++) {
     let moved = false

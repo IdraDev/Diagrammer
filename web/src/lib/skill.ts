@@ -27,6 +27,12 @@ unless the user explicitly asks for it; emit one fenced JSON block.
   user wants a hand-tuned layout. Otherwise omit them and let the viewer
   compute positions per type. Manual edits in the viewer's edit mode write
   these coordinates back when the user moves nodes.
+- **Never place two nodes so their bounding boxes overlap or touch.** When
+  emitting \`x\` / \`y\`, leave at least ~16 px of clear space between every pair
+  of node rectangles (treat label width × node height as the box). Nodes are
+  120–280 px wide and ~44–140 px tall depending on label/description length —
+  budget for the wider end. The viewer auto-separates loaded maps as a safety
+  net, but author with proper spacing so labels and edge handles don't crowd.
 
 ## Choosing a type
 
@@ -267,6 +273,8 @@ attribute list, but the existing fields cover the common case:
 - Do **not** invent layout coordinates by guessing pixel positions; let the
   viewer compute them unless the user explicitly asks for a custom layout
   (e.g. by editing in the viewer first).
+- Do **not** emit overlapping \`x\` / \`y\` placements. If two nodes share or nearly
+  share coordinates, drop the coords on both and let auto-layout space them.
 - Do **not** include emoji in labels.
 - Do **not** wrap the JSON in additional commentary unless asked. The user
   will paste the JSON directly into the viewer.
