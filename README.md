@@ -1,8 +1,7 @@
-<p align="center">
-  <img src="https://em-content.zobj.net/source/apple/391/triangular-ruler_1f4d0.png" width="120" />
-</p>
-
-<h1 align="center">Diagrammer</h1>
+<h1 align="center">
+  <img src="https://em-content.zobj.net/source/apple/391/triangular-ruler_1f4d0.png" width="64" align="center" />
+  &nbsp;Diagrammer
+</h1>
 
 <p align="center">
   <strong>tell the model, get the diagram</strong>
@@ -36,7 +35,7 @@ A local-first, schema-driven viewer for **LLM-authored diagrams**. Hand a model 
 
 ## Why
 
-I never found a **truly open-source, zero vendor lock-in** way to take a mind map or technical diagram and just *view it*. Every option pulled me into a SaaS account, a proprietary file format, a paywalled export, or a dialect of someone else's DSL. So Diagrammer: one tiny JSON schema, a static viewer that runs in your browser, no backend, no signup, no lock-in. Your data stays your data — paste it, drop it, export it, host the whole thing yourself in a `dist/` folder.
+I never found a **truly open-source, zero vendor lock-in** way to take a mind map or technical diagram and just _view it_. Every option pulled me into a SaaS account, a proprietary file format, a paywalled export, or a dialect of someone else's DSL. So Diagrammer: one tiny JSON schema, a static viewer that runs in your browser, no backend, no signup, no lock-in. Your data stays your data — paste it, drop it, export it, host the whole thing yourself in a `dist/` folder.
 
 ## Map Types
 
@@ -129,14 +128,14 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ### Stack
 
-| Layer      | Tool                                |
-| ---------- | ----------------------------------- |
-| Bundler    | Vite                                |
-| UI         | React 19 + TypeScript               |
-| Styling    | Tailwind CSS v4                     |
-| Primitives | Radix UI in shadcn-style wrappers   |
-| Canvas    | React Flow (`@xyflow/react`)         |
-| Compiler   | React Compiler                      |
+| Layer      | Tool                              |
+| ---------- | --------------------------------- |
+| Bundler    | Vite                              |
+| UI         | React 19 + TypeScript             |
+| Styling    | Tailwind CSS v4                   |
+| Primitives | Radix UI in shadcn-style wrappers |
+| Canvas     | React Flow (`@xyflow/react`)      |
+| Compiler   | React Compiler                    |
 
 ## Authoring Skill
 
@@ -158,23 +157,21 @@ The home page exposes a **Copy authoring skill** button — paste it into your m
   "description": "Optional one-liner",
   "nodes": [
     { "id": "root", "label": "Center", "emphasis": "strong" },
-    { "id": "a",    "label": "Branch A", "color": "blue" }
+    { "id": "a", "label": "Branch A", "color": "blue" }
   ],
-  "edges": [
-    { "from": "root", "to": "a", "label": "optional" }
-  ]
+  "edges": [{ "from": "root", "to": "a", "label": "optional" }]
 }
 ```
 
-| Field               | Type  | Notes                                                                            |
-| ------------------- | ----- | -------------------------------------------------------------------------------- |
-| `version`           | `"1"` | Schema version. Always `"1"`.                                                    |
-| `type`              | enum  | `mindmap` · `tree` · `flowchart` · `graph` · `concept` · `timeline`.             |
-| `nodes[].shape`     | enum  | `rectangle` · `rounded` · `ellipse` · `diamond` · `hexagon` · `pill`.            |
-| `nodes[].color`     | enum  | `default` · `slate` · `blue` · `green` · `amber` · `rose` · `violet` · `cyan`.   |
-| `nodes[].emphasis`  | enum  | `normal` · `strong` · `subtle`.                                                  |
-| `edges[].style`     | enum  | `solid` · `dashed` · `dotted`.                                                   |
-| `edges[].direction` | enum  | `forward` · `backward` · `both` · `none`.                                        |
+| Field               | Type  | Notes                                                                          |
+| ------------------- | ----- | ------------------------------------------------------------------------------ |
+| `version`           | `"1"` | Schema version. Always `"1"`.                                                  |
+| `type`              | enum  | `mindmap` · `tree` · `flowchart` · `graph` · `concept` · `timeline`.           |
+| `nodes[].shape`     | enum  | `rectangle` · `rounded` · `ellipse` · `diamond` · `hexagon` · `pill`.          |
+| `nodes[].color`     | enum  | `default` · `slate` · `blue` · `green` · `amber` · `rose` · `violet` · `cyan`. |
+| `nodes[].emphasis`  | enum  | `normal` · `strong` · `subtle`.                                                |
+| `edges[].style`     | enum  | `solid` · `dashed` · `dotted`.                                                 |
+| `edges[].direction` | enum  | `forward` · `backward` · `both` · `none`.                                      |
 
 Full reference: [`SKILL.md`](./SKILL.md).
 
@@ -182,14 +179,14 @@ Full reference: [`SKILL.md`](./SKILL.md).
 
 ER diagrams render as `type: "graph"`. The schema covers the common case without dedicated attribute lists:
 
-| Concept       | Convention                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------ |
-| Entity        | `shape: "rectangle"`, `label: "**Name**"`, `description: "id (PK), col1, col2_id (FK), ..."`.    |
-| Primary       | `color: "blue"` + `emphasis: "strong"`.                                                          |
-| Lookup / weak | `color: "slate"` + `emphasis: "subtle"`.                                                         |
-| Relationship  | edge with `label: "verb (1—N)"`, `direction: "both"`.                                            |
-| Chen-style    | Intermediate `shape: "diamond"` node when relationship has its own attributes.                   |
-| Cardinality   | Pick one: `1—1` / `1—N` / `M—N` (or `0..N` / `1..*`). Stay consistent.                           |
+| Concept       | Convention                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| Entity        | `shape: "rectangle"`, `label: "**Name**"`, `description: "id (PK), col1, col2_id (FK), ..."`. |
+| Primary       | `color: "blue"` + `emphasis: "strong"`.                                                       |
+| Lookup / weak | `color: "slate"` + `emphasis: "subtle"`.                                                      |
+| Relationship  | edge with `label: "verb (1—N)"`, `direction: "both"`.                                         |
+| Chen-style    | Intermediate `shape: "diamond"` node when relationship has its own attributes.                |
+| Cardinality   | Pick one: `1—1` / `1—N` / `M—N` (or `0..N` / `1..*`). Stay consistent.                        |
 
 Worked ER example shipped in the in-app **Examples** menu (`Order management ER`).
 
@@ -213,9 +210,7 @@ Drop any `*.json` from [`examples/`](./examples) onto the canvas, or paste strai
 
 If Diagrammer save you mass clicking — leave mass star. ⭐
 
-## 📐 Also by IdraDev
-
-- **[idra.app](https://idra.app)** — more local-first, schema-driven tools.
+[![Star History Chart](https://api.star-history.com/svg?repos=IdraDev/diagrammer&type=Date)](https://star-history.com/#IdraDev/diagrammer&Date)
 
 ## License
 
