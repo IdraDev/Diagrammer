@@ -24,12 +24,6 @@
   <a href="#er-diagrams">ER</a>
 </p>
 
-<p align="center">
-  <strong>📐 by IdraDev</strong> &nbsp;·&nbsp;
-  <strong>Diagrammer</strong> <em>render diagrams</em> <sub>(you are here)</sub> &nbsp;·&nbsp;
-  <a href="https://idra.app">idra.app</a> <em>more tools</em>
-</p>
-
 ---
 
 A local-first, schema-driven viewer for **LLM-authored diagrams**. Hand a model the [authoring skill](./SKILL.md), it returns a JSON document, and the viewer renders it on a pannable, zoomable canvas — **mindmap, tree, flowchart, graph, ER diagram, concept map, or timeline**, auto-laid-out per type. No account. No cloud. No drag-pixels-by-hand.
@@ -97,16 +91,6 @@ I never found a **truly open-source, zero vendor lock-in** way to take a mind ma
 </td>
 </tr>
 </table>
-
-```
-┌─────────────────────────────────────┐
-│  MAP TYPES             ████████   7 │
-│  AUTHORING TIME        ████████ ~5s │
-│  MANUAL COORDINATES    ░░░░░░░░   0 │
-│  CLOUD ACCOUNTS        ░░░░░░░░   0 │
-│  VIBES                 ████████ OOG │
-└─────────────────────────────────────┘
-```
 
 - **No coordinates** — auto-layout per `type`. Drag if you must, viewer writes positions back.
 - **Local-first** — recents in `localStorage`, paste/drop JSON, no upload.
