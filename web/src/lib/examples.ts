@@ -210,67 +210,129 @@ const orderManagementER: MapDocument = {
   version: '1',
   type: 'graph',
   title: 'Order management **ER**',
-  description: 'Customers, orders, line items, products, categories.',
+  description:
+    'Entities, foreign keys, and cardinalities for an e-commerce schema. Arrows point from the **N** side to the **1** side (FK → PK).',
   nodes: [
     {
       id: 'customer',
       label: '**Customer**',
-      description: 'id (PK), email, name, created_at',
+      description:
+        '`id` (PK)\n`email` (unique)\n`name`\n`created_at`',
       shape: 'rectangle',
       color: 'blue',
       emphasis: 'strong',
     },
     {
-      id: 'order',
-      label: '**Order**',
-      description: 'id (PK), customer_id (FK), placed_at, status',
+      id: 'address',
+      label: '**Address**',
+      description:
+        '`id` (PK)\n`customer_id` (FK)\n`line1`, `city`, `country`',
       shape: 'rectangle',
       color: 'blue',
+      emphasis: 'subtle',
+    },
+    {
+      id: 'order',
+      label: '**Order**',
+      description:
+        '`id` (PK)\n`customer_id` (FK)\n`shipping_address_id` (FK)\n`placed_at`, `status`, `total`',
+      shape: 'rectangle',
+      color: 'amber',
+      emphasis: 'strong',
     },
     {
       id: 'line_item',
       label: '**LineItem**',
-      description: 'id (PK), order_id (FK), product_id (FK), qty, unit_price',
-      shape: 'rectangle',
-    },
-    {
-      id: 'product',
-      label: '**Product**',
-      description: 'id (PK), sku, name, price',
-      shape: 'rectangle',
-      color: 'green',
-    },
-    {
-      id: 'category',
-      label: '**Category**',
-      description: 'id (PK), name',
-      shape: 'rectangle',
-      color: 'slate',
-      emphasis: 'subtle',
-    },
-    {
-      id: 'address',
-      label: '**Address**',
-      description: 'id (PK), customer_id (FK), line1, city, country',
-      shape: 'rectangle',
-      color: 'slate',
-      emphasis: 'subtle',
+      description:
+        '`order_id` (FK)\n`product_id` (FK)\n`qty`, `unit_price`\n*(associative entity)*',
+      shape: 'diamond',
+      color: 'amber',
     },
     {
       id: 'payment',
       label: '**Payment**',
-      description: 'id (PK), order_id (FK), method, amount, status',
+      description:
+        '`id` (PK)\n`order_id` (FK)\n`method`, `amount`, `status`, `paid_at`',
       shape: 'rectangle',
       color: 'amber',
     },
+    {
+      id: 'shipment',
+      label: '**Shipment**',
+      description:
+        '`id` (PK)\n`order_id` (FK)\n`address_id` (FK)\n`carrier`, `tracking`, `shipped_at`',
+      shape: 'rectangle',
+      color: 'rose',
+    },
+    {
+      id: 'product',
+      label: '**Product**',
+      description:
+        '`id` (PK)\n`sku` (unique)\n`name`, `price`, `category_id` (FK)',
+      shape: 'rectangle',
+      color: 'green',
+      emphasis: 'strong',
+    },
+    {
+      id: 'category',
+      label: '**Category**',
+      description: '`id` (PK)\n`name`, `parent_id` (FK, self)',
+      shape: 'rectangle',
+      color: 'green',
+      emphasis: 'subtle',
+    },
+    {
+      id: 'inventory',
+      label: '**Inventory**',
+      description:
+        '`product_id` (PK, FK)\n`warehouse_id` (PK, FK)\n`qty_on_hand`',
+      shape: 'rectangle',
+      color: 'cyan',
+    },
+    {
+      id: 'warehouse',
+      label: '**Warehouse**',
+      description: '`id` (PK)\n`code`, `location`',
+      shape: 'rectangle',
+      color: 'cyan',
+      emphasis: 'subtle',
+    },
+    {
+      id: 'review',
+      label: '**Review**',
+      description:
+        '`id` (PK)\n`customer_id` (FK)\n`product_id` (FK)\n`rating`, `body`',
+      shape: 'rectangle',
+      color: 'violet',
+      emphasis: 'subtle',
+    },
   ],
   edges: [
-    { from: 'customer', to: 'order', label: 'places (1—N)', direction: 'both' },
-    { from: 'customer', to: 'address', label: 'has (1—N)', direction: 'both' },
-    { from: 'order', to: 'line_item', label: 'contains (1—N)', direction: 'both' },
-    { from: 'product', to: 'line_item', label: 'appears in (1—N)', direction: 'both' },
-    { from: 'category', to: 'product', label: 'groups (1—N)', direction: 'both' },
-    { from: 'order', to: 'payment', label: 'paid by (1—1)', direction: 'both' },
+    { from: 'address', to: 'customer', label: 'N ── 1  *belongs to*', direction: 'forward' },
+    { from: 'order', to: 'customer', label: 'N ── 1  *placed by*', direction: 'forward' },
+    {
+      from: 'order',
+      to: 'address',
+      label: 'N ── 1  *ships to*',
+      direction: 'forward',
+      style: 'dashed',
+    },
+    { from: 'line_item', to: 'order', label: 'N ── 1  *in*', direction: 'forward' },
+    { from: 'line_item', to: 'product', label: 'N ── 1  *of*', direction: 'forward' },
+    { from: 'payment', to: 'order', label: '1 ── 1  *settles*', direction: 'forward' },
+    { from: 'shipment', to: 'order', label: 'N ── 1  *fulfills*', direction: 'forward' },
+    {
+      from: 'shipment',
+      to: 'address',
+      label: 'N ── 1  *to*',
+      direction: 'forward',
+      style: 'dashed',
+    },
+    { from: 'product', to: 'category', label: 'N ── 1  *in*', direction: 'forward' },
+    { from: 'inventory', to: 'product', label: 'N ── 1  *stock of*', direction: 'forward' },
+    { from: 'inventory', to: 'warehouse', label: 'N ── 1  *at*', direction: 'forward' },
+    { from: 'review', to: 'customer', label: 'N ── 1  *by*', direction: 'forward' },
+    { from: 'review', to: 'product', label: 'N ── 1  *for*', direction: 'forward' },
   ],
 }
 
@@ -416,7 +478,8 @@ export const EXAMPLES: ExampleEntry[] = [
   {
     slug: 'order-management-er',
     label: 'Order management ER',
-    description: 'Entity–relationship diagram with cardinalities.',
+    description:
+      'Entity–relationship diagram with FK arrows and cardinality labels.',
     map: orderManagementER,
   },
   {

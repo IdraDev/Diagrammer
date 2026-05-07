@@ -92,7 +92,8 @@ export function Studio() {
   const [titleEditing, setTitleEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { fitView, zoomIn, zoomOut, screenToFlowPosition } = useReactFlow();
+  const { fitView, setViewport, zoomIn, zoomOut, screenToFlowPosition } =
+    useReactFlow();
 
   // React Flow state — owned at the Studio level so the properties panel and
   // toolbar can read/mutate it directly without round-tripping props.
@@ -140,13 +141,19 @@ export function Studio() {
     setEdges(graph.edges);
     setTitleEditing(false);
     // Auto-enter edit mode for blank local maps.
-    setIsEditing(
-      active.recent.source === "local" && active.map.nodes.length <= 1,
-    );
-    // Fit view after the next paint so RF has dimensions.
+    const isBlankLocal =
+      active.recent.source === "local" && active.map.nodes.length <= 1;
+    setIsEditing(isBlankLocal);
+    // For freshly created blank docs keep zoom at 100% so the seed node
+    // stays the size it will actually be at — don't auto-fit. For
+    // populated maps, fit to content after the next paint.
     const t = setTimeout(() => {
       try {
-        fitView({ padding: 0.18, duration: 250 });
+        if (isBlankLocal) {
+          setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 0 });
+        } else {
+          fitView({ padding: 0.18, duration: 250 });
+        }
       } catch {
         // RF can throw if no nodes are measured yet — safe to ignore.
       }

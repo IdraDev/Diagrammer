@@ -78,8 +78,7 @@ export function Flow({
         minZoom={0.1}
         maxZoom={4}
         proOptions={{ hideAttribution: true }}
-        fitView
-        fitViewOptions={{ padding: 0.18 }}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         selectionOnDrag={false}
         colorMode={isDark ? 'dark' : 'light'}
         defaultEdgeOptions={{ type: 'standard' }}
