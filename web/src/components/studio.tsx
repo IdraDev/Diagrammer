@@ -18,6 +18,7 @@ import {
   FilePlus2,
   FolderOpen,
   Github,
+  Keyboard,
   Maximize2,
   Menu as MenuIcon,
   Minus,
@@ -46,6 +47,7 @@ import { Separator } from "@/components/ui/separator";
 import { SkillDialog } from "./skill-dialog";
 import { PasteDialog } from "./paste-dialog";
 import { MenuDialog } from "./menu-dialog";
+import { ShortcutsDialog } from "./shortcuts-dialog";
 import { MapTypeIcon } from "./map-type-icon";
 import {
   buildNode,
@@ -74,6 +76,14 @@ import { EXAMPLES, type ExampleEntry } from "@/lib/examples";
 import { cn, downloadJson, slugify } from "@/lib/utils";
 import { InlineMarkdown, stripMarkdown } from "@/lib/markdown";
 import { useTheme } from "@/lib/theme";
+import {
+  SHORTCUT_DEFS,
+  bindingHasModifier,
+  getBindings,
+  matchBinding,
+  setBindings as persistBindings,
+  type ShortcutId,
+} from "@/lib/shortcuts";
 
 interface ActiveMap {
   map: MapDocument;
@@ -91,6 +101,10 @@ export function Studio() {
   const [skillOpen, setSkillOpen] = useState(false);
   const [pasteOpen, setPasteOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [bindings, setBindingsState] = useState<Record<ShortcutId, string>>(
+    () => getBindings(),
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [titleEditing, setTitleEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -612,6 +626,69 @@ export function Studio() {
     drop(containerRef);
   }, [drop]);
 
+  // ---- Keyboard shortcuts ----
+
+  const updateBindings = useCallback(
+    (next: Record<ShortcutId, string>) => {
+      setBindingsState(next);
+      persistBindings(next);
+    },
+    [],
+  );
+
+  const actionsRef = useRef<Record<ShortcutId, () => void>>(
+    {} as Record<ShortcutId, () => void>,
+  );
+  useEffect(() => {
+    actionsRef.current = {
+      newMap: onNewMap,
+      openFile: onPickFile,
+      pasteJson: () => setPasteOpen(true),
+      downloadJson: onDownload,
+      toggleEdit: () => {
+        if (active) setIsEditing((v) => !v);
+      },
+      addNode: () => addNode(),
+      closeMap: onCloseMap,
+      showShortcuts: () => setShortcutsOpen(true),
+      openMenu: () => setMenuOpen(true),
+      showSkill: () => setSkillOpen(true),
+    };
+  });
+
+  const scopeStateRef = useRef({ active, isEditing });
+  useEffect(() => {
+    scopeStateRef.current = { active, isEditing };
+  });
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const editable =
+        !!target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable);
+      for (const def of SHORTCUT_DEFS) {
+        const binding = bindings[def.id];
+        if (!binding) continue;
+        if (!matchBinding(e, binding)) continue;
+        const { active: a, isEditing: ed } = scopeStateRef.current;
+        if (def.scope === "mapOpen" && !a) continue;
+        if (def.scope === "edit" && (!a || !ed)) continue;
+        // Plain-key bindings (no Mod/Ctrl/Alt) shouldn't fire while typing.
+        if (editable && !bindingHasModifier(binding)) continue;
+        e.preventDefault();
+        e.stopPropagation();
+        actionsRef.current[def.id]?.();
+        return;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [bindings]);
+
   return (
     <TooltipProvider>
       <div
@@ -643,12 +720,17 @@ export function Studio() {
               <MenuIcon />
             </Button>
           </Tooltip>
-          <div className="flex items-center gap-1.5 px-1.5">
+          <a
+            href="https://diagrammer.idra.app"
+            aria-label="Diagrammer homepage"
+            title="Diagrammer homepage"
+            className="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-(--color-foreground) transition-colors hover:bg-(--color-muted) focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             <Logo />
             <span className="hidden text-sm font-semibold tracking-tight sm:inline">
               Diagrammer
             </span>
-          </div>
+          </a>
           {active ? (
             <>
               <Separator orientation="vertical" className="mx-1 h-5" />
@@ -786,6 +868,16 @@ export function Studio() {
             </Tooltip>
           ) : null}
           <Separator orientation="vertical" className="mx-0.5 h-5" />
+          <Tooltip label="Keyboard shortcuts">
+            <Button
+              variant="ghost"
+              size="iconSm"
+              aria-label="Keyboard shortcuts"
+              onClick={() => setShortcutsOpen(true)}
+            >
+              <Keyboard />
+            </Button>
+          </Tooltip>
           <ThemeToggle theme={theme} setTheme={setTheme} />
           <Tooltip label="GitHub">
             <Button variant="ghost" size="iconSm" aria-label="GitHub" asChild>
@@ -906,6 +998,12 @@ export function Studio() {
         ) : null}
 
         <SkillDialog open={skillOpen} onOpenChange={setSkillOpen} />
+        <ShortcutsDialog
+          open={shortcutsOpen}
+          onOpenChange={setShortcutsOpen}
+          bindings={bindings}
+          onBindingsChange={updateBindings}
+        />
         <PasteDialog
           open={pasteOpen}
           onOpenChange={setPasteOpen}
