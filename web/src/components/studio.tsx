@@ -13,6 +13,7 @@ import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import {
   ClipboardPaste,
+  FileDown,
   FileJson,
   FilePlus2,
   FolderOpen,
@@ -26,7 +27,6 @@ import {
   Moon,
   Pencil,
   Plus,
-  Share2,
   Sparkles,
   Sun,
   X,
@@ -896,7 +896,7 @@ export function Studio() {
                 onClick={onOpenExport}
                 disabled={exportBusy}
               >
-                {exportBusy ? <Loader2 className="animate-spin" /> : <Share2 />}
+                {exportBusy ? <Loader2 className="animate-spin" /> : <FileDown />}
               </Button>
             </Tooltip>
           ) : null}
