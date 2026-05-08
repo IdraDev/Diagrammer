@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(bunx tsc *)",
-      "Bash(bun run *)"
+      "Bash(bun run *)",
+      "Bash(bun add *)"
     ]
   }
 }

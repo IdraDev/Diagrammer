@@ -13,12 +13,12 @@ import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import {
   ClipboardPaste,
-  Download,
   FileJson,
   FilePlus2,
   FolderOpen,
   Github,
   Keyboard,
+  Loader2,
   Maximize2,
   Menu as MenuIcon,
   Minus,
@@ -26,6 +26,7 @@ import {
   Moon,
   Pencil,
   Plus,
+  Share2,
   Sparkles,
   Sun,
   X,
@@ -48,6 +49,7 @@ import { SkillDialog } from "./skill-dialog";
 import { PasteDialog } from "./paste-dialog";
 import { MenuDialog } from "./menu-dialog";
 import { ShortcutsDialog } from "./shortcuts-dialog";
+import { ExportDialog } from "./export-dialog";
 import { MapTypeIcon } from "./map-type-icon";
 import {
   buildNode,
@@ -84,6 +86,7 @@ import {
   setBindings as persistBindings,
   type ShortcutId,
 } from "@/lib/shortcuts";
+import { exportFlowPng } from "@/lib/export-png";
 
 interface ActiveMap {
   map: MapDocument;
@@ -102,6 +105,8 @@ export function Studio() {
   const [pasteOpen, setPasteOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportBusy, setExportBusy] = useState(false);
   const [bindings, setBindingsState] = useState<Record<ShortcutId, string>>(
     () => getBindings(),
   );
@@ -318,11 +323,38 @@ export function Studio() {
     setActive(null);
   }, [flushSave]);
 
-  const onDownload = useCallback(() => {
+  const onDownloadJson = useCallback(() => {
     if (!active) return;
     const next = flowToMap(active.map, nodes, edges);
     downloadJson(`${slugify(stripMarkdown(next.title))}.json`, next);
   }, [active, edges, nodes]);
+
+  const onExportPng = useCallback(
+    async (target: "light" | "dark") => {
+      if (!active) return;
+      const baseName = slugify(stripMarkdown(active.map.title));
+      try {
+        setExportBusy(true);
+        await exportFlowPng({
+          filename: `${baseName}-${target}.png`,
+          nodes,
+          theme: target,
+          currentTheme: theme,
+          setTheme,
+        });
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Export failed.");
+      } finally {
+        setExportBusy(false);
+      }
+    },
+    [active, nodes, theme, setTheme],
+  );
+
+  const onOpenExport = useCallback(() => {
+    if (!active) return;
+    setExportOpen(true);
+  }, [active]);
 
   const onNewMap = useCallback(() => {
     const seed = buildNode({
@@ -644,7 +676,7 @@ export function Studio() {
       newMap: onNewMap,
       openFile: onPickFile,
       pasteJson: () => setPasteOpen(true),
-      downloadJson: onDownload,
+      downloadJson: onOpenExport,
       toggleEdit: () => {
         if (active) setIsEditing((v) => !v);
       },
@@ -856,14 +888,15 @@ export function Studio() {
             </Button>
           </Tooltip>
           {active ? (
-            <Tooltip label="Download JSON">
+            <Tooltip label="Export">
               <Button
                 variant="ghost"
                 size="iconSm"
-                aria-label="Download"
-                onClick={onDownload}
+                aria-label="Export"
+                onClick={onOpenExport}
+                disabled={exportBusy}
               >
-                <Download />
+                {exportBusy ? <Loader2 className="animate-spin" /> : <Share2 />}
               </Button>
             </Tooltip>
           ) : null}
@@ -1003,6 +1036,26 @@ export function Studio() {
           onOpenChange={setShortcutsOpen}
           bindings={bindings}
           onBindingsChange={updateBindings}
+        />
+        <ExportDialog
+          open={exportOpen}
+          onOpenChange={(o) => {
+            if (exportBusy) return;
+            setExportOpen(o);
+          }}
+          onExportJson={() => {
+            onDownloadJson();
+            setExportOpen(false);
+          }}
+          onExportPngLight={async () => {
+            setExportOpen(false);
+            await onExportPng("light");
+          }}
+          onExportPngDark={async () => {
+            setExportOpen(false);
+            await onExportPng("dark");
+          }}
+          busy={exportBusy}
         />
         <PasteDialog
           open={pasteOpen}
@@ -1157,7 +1210,7 @@ function Logo({ size = 22 }: { size?: number }) {
 
 function SaveIndicator({ state }: { state: SaveState }) {
   if (state === "idle") return null;
-  const label = state === "saving" ? "Salvataggio…" : "Modifiche non salvate";
+  const label = state === "saving" ? "Saving…" : "Unsaved changes";
   return (
     <span
       className="ml-1 hidden items-center gap-1 rounded-md border border-(--color-border) bg-(--color-muted)/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-flex"

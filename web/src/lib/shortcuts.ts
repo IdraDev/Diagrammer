@@ -28,7 +28,7 @@ export const SHORTCUT_DEFS: ShortcutDef[] = [
   { id: 'newMap', label: 'New map', defaultBinding: 'Mod+Alt+N', scope: 'always' },
   { id: 'openFile', label: 'Open file', defaultBinding: 'Mod+O', scope: 'always' },
   { id: 'pasteJson', label: 'Paste JSON', defaultBinding: 'Mod+Shift+V', scope: 'always' },
-  { id: 'downloadJson', label: 'Download JSON', defaultBinding: 'Mod+S', scope: 'mapOpen' },
+  { id: 'downloadJson', label: 'Export…', defaultBinding: 'Mod+S', scope: 'mapOpen' },
   { id: 'toggleEdit', label: 'Toggle edit / view mode', defaultBinding: 'Mod+E', scope: 'mapOpen' },
   { id: 'addNode', label: 'Add node', defaultBinding: 'Mod+Enter', scope: 'edit' },
   { id: 'closeMap', label: 'Close map', defaultBinding: 'Mod+Shift+W', scope: 'mapOpen' },
