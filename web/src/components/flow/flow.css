@@ -39,6 +39,24 @@
   filter: drop-shadow(0 0 0 var(--xy-edge-stroke-selected-default));
 }
 
+/* Reconnect anchors: show a grab cursor and a subtle handle on hover/select
+   so users can find the endpoint to drag. Default React Flow renders them
+   transparent with no cursor cue. */
+.react-flow__edgeupdater {
+  cursor: grab;
+}
+.react-flow__edgeupdater:active {
+  cursor: grabbing;
+}
+.react-flow__edge:hover .react-flow__edgeupdater,
+.react-flow__edge.selected .react-flow__edgeupdater {
+  fill: var(--xy-edge-stroke-selected-default);
+  fill-opacity: 0.18;
+  stroke: var(--xy-edge-stroke-selected-default);
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+}
+
 /* Selection ring around our custom nodes */
 .react-flow__node.selected .standard-node-frame {
   outline: 2px solid color-mix(in oklab, var(--color-foreground) 45%, transparent);
