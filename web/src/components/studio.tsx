@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addEdge,
+  reconnectEdge,
   useEdgesState,
   useNodesState,
   useReactFlow,
   type Connection,
+  type Edge,
   type EdgeChange,
   type NodeChange,
   type OnSelectionChangeParams,
@@ -437,6 +439,27 @@ export function Studio() {
     [isEditing, setEdges],
   );
 
+  // Track whether the in-progress reconnect landed on a valid handle. When a
+  // user drops the endpoint on empty canvas we leave the edge untouched.
+  const reconnectSuccessfulRef = useRef(true);
+
+  const onReconnectStart = useCallback(() => {
+    reconnectSuccessfulRef.current = false;
+  }, []);
+
+  const onReconnect = useCallback(
+    (oldEdge: StandardFlowEdge, newConnection: Connection) => {
+      if (!isEditing) return;
+      reconnectSuccessfulRef.current = true;
+      setEdges((eds) => reconnectEdge(oldEdge, newConnection, eds));
+    },
+    [isEditing, setEdges],
+  );
+
+  const onReconnectEnd = useCallback((_e: MouseEvent | TouchEvent, _edge: Edge) => {
+    reconnectSuccessfulRef.current = true;
+  }, []);
+
   const onSelectionChange = useCallback((s: OnSelectionChangeParams) => {
     setSelection({ nodes: s.nodes, edges: s.edges });
   }, []);
@@ -733,6 +756,9 @@ export function Studio() {
           onNodesChange={handleNodesChange}
           onEdgesChange={handleEdgesChange}
           onConnect={onConnect}
+          onReconnect={onReconnect}
+          onReconnectStart={onReconnectStart}
+          onReconnectEnd={onReconnectEnd}
           onSelectionChange={onSelectionChange}
           onPaneClick={onPaneClick}
           onNodeLabelChange={onNodeLabelChange}

@@ -9,6 +9,7 @@ import {
   type NodeChange,
   type OnSelectionChangeParams,
 } from '@xyflow/react'
+import type { Edge } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import './flow.css'
 import { StandardNode } from './standard-node'
@@ -28,6 +29,9 @@ export interface FlowProps {
   onNodesChange: (changes: NodeChange<StandardFlowNode>[]) => void
   onEdgesChange: (changes: EdgeChange<StandardFlowEdge>[]) => void
   onConnect: (c: Connection) => void
+  onReconnect?: (oldEdge: StandardFlowEdge, newConnection: Connection) => void
+  onReconnectStart?: () => void
+  onReconnectEnd?: (event: MouseEvent | TouchEvent, edge: Edge) => void
   onSelectionChange?: (s: OnSelectionChangeParams) => void
   onNodeLabelChange: (id: string, label: string) => void
   onPaneClick?: () => void
@@ -41,6 +45,9 @@ export function Flow({
   onNodesChange,
   onEdgesChange,
   onConnect,
+  onReconnect,
+  onReconnectStart,
+  onReconnectEnd,
   onSelectionChange,
   onNodeLabelChange,
   onPaneClick,
@@ -60,6 +67,11 @@ export function Flow({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onReconnect={onReconnect}
+        onReconnectStart={onReconnectStart}
+        onReconnectEnd={onReconnectEnd}
+        edgesReconnectable={isEditing}
+        reconnectRadius={20}
         onSelectionChange={onSelectionChange}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
